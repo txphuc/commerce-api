@@ -1,9 +1,10 @@
 import { ModuleMetadata } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import configuration from 'config/configuration';
-import { dataSourceFactory } from 'config/data-source';
+import configuration from 'src/config/configuration';
+import { dataSourceFactory } from 'src/config/data-source';
 import { DataSourceOptions } from 'typeorm';
+import { ApiModule } from './api/api.module';
 
 export function generateModuleSet() {
   const imports: ModuleMetadata['imports'] = [
@@ -20,6 +21,8 @@ export function generateModuleSet() {
       },
       dataSourceFactory: dataSourceFactory,
     }),
+
+    ApiModule,
   ];
 
   return imports;

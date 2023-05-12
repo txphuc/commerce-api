@@ -8,8 +8,8 @@ export function makeDataSourceOptions(): DataSourceOptions {
     username: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
     database: process.env.POSTGRES_DB,
-    entities: ['src/entity/**/*.ts'],
-    migrations: ['src/migration/**/*.ts'],
+    entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+    migrations: [__dirname + '/../**/migrations/*{.ts,.js}'],
     logging: false,
     synchronize: false,
   };
