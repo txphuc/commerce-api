@@ -1,10 +1,12 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
-import * as bcrypt from 'bcrypt';
 import { Role } from 'src/common/enums/role.enum';
+import { hash } from 'src/common/utils/bcrypt.util';
+import { authError } from 'src/common/errors/constants/auth.constant';
+import { commonError } from 'src/common/errors/constants/common.constant';
 
 @Injectable()
 export class UsersService {
@@ -20,17 +22,21 @@ export class UsersService {
     if (user) {
       return user;
     }
-    throw new HttpException('User with this id does not exist', HttpStatus.NOT_FOUND);
+    throw new NotFoundException({
+      resource: User.name,
+      field: 'id',
+      code: commonError.isNotFound,
+    });
   }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     let user = await this.findOneByEmail(createUserDto.email);
     if (user) {
-      throw new Error('Already exists');
+      throw new BadRequestException(authError.isExistEmail);
     } else {
       createUserDto.role = Role.User;
       user = this.usersRepository.create(createUserDto);
-      user.password = await bcrypt.hash(createUserDto.password, 10);
+      user.password = await hash(createUserDto.password);
       return await this.usersRepository.save(user);
     }
   }

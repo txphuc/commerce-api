@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import { UsersService } from 'src/api/users/users.service';
 import TokenPayload from '../interfaces/token-payload.interface';
+import { CurrentUserType } from 'src/common/types/current-user.type';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -23,6 +24,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: TokenPayload) {
-    return this.userService.findOneById(payload.userId);
+    const user = await this.userService.findOneById(payload.userId);
+    const currentUser: CurrentUserType = {
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+    };
+    return currentUser;
   }
 }

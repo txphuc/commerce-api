@@ -5,6 +5,6 @@ export default () => ({
   database: makeDataSourceOptions(),
   jwt: {
     secret: process.env.JWT_SECRET ?? 'default-secret',
-    expiresIn: process.env.JWT_EXPIRES_IN ?? '3600s',
+    expiresIn: process.env.JWT_EXPIRES_IN ?? '12h',
   },
 });
