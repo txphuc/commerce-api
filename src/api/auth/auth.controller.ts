@@ -12,7 +12,7 @@ import { SignInDto } from './dto/sign-in.dto';
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
 
-  constructor(private authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Public()
   @Post('sign-up')
