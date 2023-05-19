@@ -29,7 +29,7 @@ export class AuthController {
     @Req() request: RequestWithUser,
     @Res() response: Response,
   ) {
-    this.logger.log(signInDto.email);
+    this.logger.log('Email: ' + signInDto.email);
     const { user } = request;
     const cookie = this.authService.getCookieWithJwtToken(user);
     response.setHeader('Set-Cookie', cookie);
