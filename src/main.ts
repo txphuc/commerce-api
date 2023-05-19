@@ -6,7 +6,7 @@ import { App } from './common/constants/app.constant';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { BadRequestExceptionsFilter } from './common/filters/bad-request-exceptions.filter';
 import * as cookieParser from 'cookie-parser';
-import { NotFoundExceptionsFilter } from './common/filters/not-found-exception.filter';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -24,7 +24,7 @@ async function bootstrap() {
       exceptionFactory: (errors) => new BadRequestException(errors),
     }),
   );
-  app.useGlobalFilters(new BadRequestExceptionsFilter(), new NotFoundExceptionsFilter());
+  app.useGlobalFilters(new BadRequestExceptionsFilter(), new AllExceptionsFilter());
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

@@ -10,6 +10,7 @@ export const commonError = {
   isLongitude: '1008',
   min: '1009',
   max: '1010',
+  isNumberString: '1011',
 
   isNotFound: '1100',
 };

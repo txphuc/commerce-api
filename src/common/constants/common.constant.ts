@@ -6,7 +6,7 @@ export const Common = {
     MAX_LENGTH: 16,
   },
   FullName: {
-    MAX_LENGTH: 64,
+    MAX_LENGTH: 128,
   },
 };
 

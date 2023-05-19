@@ -1,4 +1,4 @@
-import { Body, Req, Controller, HttpCode, Post, UseGuards, Res, Logger } from '@nestjs/common';
+import { Body, Req, Controller, Post, UseGuards, Res, Logger, Get } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
@@ -7,6 +7,7 @@ import RequestWithUser from './interfaces/request-with-user.interface';
 import { ApiTags } from '@nestjs/swagger';
 import { Public } from './strategies/public.strategy';
 import { SignInDto } from './dto/sign-in.dto';
+import { GoogleAuthGuard } from './guards/google-auth.guard';
 @ApiTags('Auth')
 @Controller('api/v1/auth')
 export class AuthController {
@@ -20,20 +21,28 @@ export class AuthController {
     return this.authService.signUp(createUserDto);
   }
 
-  @HttpCode(200)
   @Public()
   @UseGuards(LocalAuthGuard)
   @Post('sign-in')
   async signIn(
+    @Body() signInDto: SignInDto,
     @Req() request: RequestWithUser,
     @Res() response: Response,
-    @Body() signInDto: SignInDto,
   ) {
-    this.logger.debug(signInDto.email);
+    this.logger.log(signInDto.email);
     const { user } = request;
-    const cookie = this.authService.getCookieWithJwtToken(user.id);
+    const cookie = this.authService.getCookieWithJwtToken(user);
     response.setHeader('Set-Cookie', cookie);
-    user.password = undefined;
+    return response.send(user);
+  }
+
+  @Public()
+  @UseGuards(GoogleAuthGuard)
+  @Get('google/redirect')
+  async googleSignIn(@Req() request: RequestWithUser, @Res() response: Response) {
+    const { user } = request;
+    const cookie = this.authService.getCookieWithJwtToken(user);
+    response.setHeader('Set-Cookie', cookie);
     return response.send(user);
   }
 }

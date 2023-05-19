@@ -1,9 +1,10 @@
 import {
   ArgumentsHost,
-  BadRequestException,
   Catch,
   ExceptionFilter,
+  Logger,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ErrorType } from 'src/common/types/error.type';
@@ -18,26 +19,27 @@ type ExceptionRes = {
   message: Constraint[];
 };
 
-@Catch(NotFoundException)
-export class NotFoundExceptionsFilter implements ExceptionFilter<BadRequestException> {
-  catch(exception: NotFoundException, host: ArgumentsHost) {
+@Catch(NotFoundException, UnauthorizedException)
+export class AllExceptionsFilter implements ExceptionFilter {
+  private readonly logger = new Logger(AllExceptionsFilter.name);
+  catch(exception: NotFoundException | UnauthorizedException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const status = exception.getStatus();
     const exceptionRes = exception.getResponse() as ExceptionRes | ErrorType;
-    const errors: ErrorType[] = [];
-    const { resource, field, code } = exceptionRes as ErrorType;
-
-    errors.push({
+    const { resource, field, code, message } = exceptionRes as ErrorType;
+    this.logger.log(JSON.stringify(exceptionRes));
+    const error = {
       resource,
       field,
       code,
-      message: data[code],
-    });
+      message: data[code] ?? message,
+    };
 
     response.status(status).json({
       success: false,
-      errors,
+      error,
     });
+    this.logger.log(JSON.stringify(error));
   }
 }

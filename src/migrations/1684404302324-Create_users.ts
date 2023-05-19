@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class CreateUsers1684292212276 implements MigrationInterface {
-  name = 'CreateUsers1684292212276';
+export class CreateUsers1684404302324 implements MigrationInterface {
+  name = 'CreateUsers1684404302324';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`CREATE TYPE "users_gender_enum" AS ENUM('Male', 'Female', 'Others')`);
@@ -11,10 +11,10 @@ export class CreateUsers1684292212276 implements MigrationInterface {
         "id" SERIAL NOT NULL,
         "email" character varying(256) NOT NULL,
         "password" character varying,
-        "full_name" character varying(64) NOT NULL,
-        "gender" "users_gender_enum" NOT NULL,
-        "phone" character varying(16) NOT NULL,
-        "address" character varying NOT NULL,
+        "full_name" character varying(128),
+        "gender" "users_gender_enum",
+        "phone" character varying(16),
+        "address" character varying,
         "role" "users_role_enum" NOT NULL DEFAULT 'User',
         "avatar" character varying,
         "is_activated" boolean NOT NULL DEFAULT false,

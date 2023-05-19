@@ -83,9 +83,18 @@ export class CreateUserDto {
   @IsOptional()
   @ApiProperty({
     description: 'Role of user',
-    nullable: false,
-    required: true,
+    nullable: true,
+    required: false,
     example: Role.User,
   })
-  role: Role;
+  role?: Role;
+
+  @IsOptional()
+  @ApiProperty({
+    description: 'Avatar path of user',
+    nullable: true,
+    required: false,
+    example: 'https://example.com/avatar.jpg',
+  })
+  avatar?: Role;
 }

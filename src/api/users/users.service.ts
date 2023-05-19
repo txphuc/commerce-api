@@ -7,6 +7,7 @@ import { Role } from 'src/common/enums/role.enum';
 import { hash } from 'src/common/utils/bcrypt.util';
 import { authError } from 'src/common/errors/constants/auth.constant';
 import { commonError } from 'src/common/errors/constants/common.constant';
+import { CreateGoogleUserDto } from './dto/create-google-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -39,5 +40,12 @@ export class UsersService {
       user.password = await hash(createUserDto.password);
       return await this.usersRepository.save(user);
     }
+  }
+
+  async createGoogleUser(createGoogleUserDto: CreateGoogleUserDto): Promise<User> {
+    const user = this.usersRepository.create(createGoogleUserDto);
+    user.role = Role.User;
+    user.isActivated = true;
+    return await this.usersRepository.save(user);
   }
 }

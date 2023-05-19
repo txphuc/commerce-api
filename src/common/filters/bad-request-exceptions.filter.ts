@@ -34,8 +34,6 @@ export class BadRequestExceptionsFilter implements ExceptionFilter<BadRequestExc
     const status = exception.getStatus();
     const exceptionRes = exception.getResponse() as ExceptionRes | ErrorType;
     const errors: ErrorType[] = [];
-    this.logger.error(exceptionRes);
-
     if (exceptionRes.message) {
       if (typeof exceptionRes.message === 'string') {
         errors.push({
@@ -74,5 +72,6 @@ export class BadRequestExceptionsFilter implements ExceptionFilter<BadRequestExc
       success: false,
       errors,
     });
+    this.logger.log(JSON.stringify(errors));
   }
 }
