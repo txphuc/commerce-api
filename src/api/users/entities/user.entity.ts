@@ -19,17 +19,17 @@ export class User extends Base {
   @Column({ nullable: true })
   password?: string;
 
-  @Column({ name: 'full_name', length: Common.FullName.MAX_LENGTH })
-  fullName: string;
+  @Column({ nullable: true, name: 'full_name', length: Common.FullName.MAX_LENGTH })
+  fullName?: string;
 
-  @Column({ type: 'enum', enum: Gender })
-  gender: Gender;
+  @Column({ nullable: true, type: 'enum', enum: Gender })
+  gender?: Gender;
 
-  @Column({ length: Common.Phone.MAX_LENGTH })
-  phone: string;
+  @Column({ nullable: true, length: Common.Phone.MAX_LENGTH })
+  phone?: string;
 
-  @Column()
-  address: string;
+  @Column({ nullable: true })
+  address?: string;
 
   @Column({ type: 'enum', enum: Role, default: Role.User })
   role: Role;

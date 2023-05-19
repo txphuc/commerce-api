@@ -10,5 +10,7 @@ export default {
   '1008': 'Should be longitude value',
   '1009': 'Should not be smaller than min value',
   '1010': 'Should not be greater than max value',
+  '1011': 'Should be number string',
+
   '1100': 'Not found',
 };

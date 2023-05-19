@@ -1,8 +1,8 @@
 import { Request } from 'express';
-import { User } from 'src/api/users/entities/user.entity';
+import { CurrentUserType } from 'src/common/types/current-user.type';
 
 interface RequestWithUser extends Request {
-  user: User;
+  user: CurrentUserType;
 }
 
 export default RequestWithUser;

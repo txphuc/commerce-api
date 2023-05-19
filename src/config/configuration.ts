@@ -7,4 +7,8 @@ export default () => ({
     secret: process.env.JWT_SECRET ?? 'default-secret',
     expiresIn: process.env.JWT_EXPIRES_IN ?? '12h',
   },
+  google: {
+    authClientId: process.env.GOOGLE_AUTH_CLIENT_ID,
+    authClientSecret: process.env.GOOGLE_AUTH_CLIENT_SECRET,
+  },
 });

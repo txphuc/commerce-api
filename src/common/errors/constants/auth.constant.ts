@@ -6,4 +6,14 @@ export const authError = {
     field: 'email',
     resource: User.name,
   },
+  isNoPassword: {
+    code: 'auth-2001',
+    field: 'password',
+    resource: User.name,
+  },
+  isIncorrectPassword: {
+    code: 'auth-2002',
+    field: 'password',
+    resource: User.name,
+  },
 };
