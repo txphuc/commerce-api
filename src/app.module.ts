@@ -1,9 +1,10 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { generateModuleSet } from './modules-set.util';
 import { APP_GUARD } from '@nestjs/core';
 import JwtAuthGuard from './api/auth/guards/jwt-auth.guard';
+import LogsMiddleware from './middlewares/logger.middleware';
 
 @Module({
   imports: generateModuleSet(),
@@ -16,4 +17,8 @@ import JwtAuthGuard from './api/auth/guards/jwt-auth.guard';
     },
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LogsMiddleware).forRoutes('*');
+  }
+}
