@@ -8,6 +8,8 @@ import { ApiTags } from '@nestjs/swagger';
 import { Public } from './strategies/public.strategy';
 import { SignInDto } from './dto/sign-in.dto';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
+import { Serialize } from 'src/common/interceptors/serialize.interceptor';
+import { UserDto } from '../users/dto/user.dto';
 @ApiTags('Auth')
 @Controller('api/v1/auth')
 export class AuthController {
@@ -17,6 +19,7 @@ export class AuthController {
 
   @Public()
   @Post('sign-up')
+  @Serialize(UserDto)
   async signUp(@Body() createUserDto: CreateUserDto) {
     return this.authService.signUp(createUserDto);
   }

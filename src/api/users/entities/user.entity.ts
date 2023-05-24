@@ -5,12 +5,13 @@ import { Role } from '../../../common/enums/role.enum';
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'users' })
-@Index('users_email_index', ['email'], {
-  unique: true,
-  where: 'deleted_at IS NULL',
-})
+@Index('users_email_index', ['email'], { unique: true })
+@Index('users_phone_index', ['phone'])
+@Index('users_fullName_index', ['fullName'])
+@Index('users_birthday_index', ['birthday'])
+@Index('users_address_index', ['address'])
 export class User extends Base {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ primaryKeyConstraintName: 'users_pkey' })
   id: number;
 
   @Column({ length: Common.Email.MAX_LENGTH })
@@ -24,6 +25,9 @@ export class User extends Base {
 
   @Column({ nullable: true, type: 'enum', enum: Gender })
   gender?: Gender;
+
+  @Column({ name: 'birthday', nullable: true, type: 'timestamptz' })
+  birthday?: Date;
 
   @Column({ nullable: true, length: Common.Phone.MAX_LENGTH })
   phone?: string;

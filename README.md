@@ -4,10 +4,43 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Environment
+
+src/.env
+
+```.env
+# App
+PORT=example
+NODE_ENV=example
+
+# Database
+POSTGRES_HOST=example
+POSTGRES_PORT=example
+POSTGRES_USER=example
+POSTGRES_PASSWORD=example
+POSTGRES_DB=example
+
+# JWT
+JWT_SECRET=example
+JWT_EXPIRES_IN=example
+
+# Google
+GOOGLE_AUTH_CLIENT_ID=example
+GOOGLE_AUTH_CLIENT_SECRET=example
+```
+
 ## Installation
 
 ```bash
+# install dependencies
 yarn install
+
+# create postgres DB (if not exists)
+docker compose up -d
+
+# migrate database structure
+
+yarn run migration:up
 ```
 
 ## Running the app
@@ -21,6 +54,17 @@ $ yarn run start:dev
 
 # production mode
 $ yarn run start:prod
+```
+
+## NestJS helpful commands
+
+```bash
+# create new module:
+nest g module module_name
+
+# migration-generate from entity (result can be found in src/migrations):
+
+NAME=name_of_migration_file yarn run migration:generate
 ```
 
 ## Test
@@ -39,6 +83,8 @@ $ yarn run test:cov
 ## Support
 
 ## Stay in touch
+
+[Tran Xuan Phuc](https://github.com/txphuc/)
 
 ## License
 

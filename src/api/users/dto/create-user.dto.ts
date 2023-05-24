@@ -58,6 +58,17 @@ export class CreateUserDto {
   })
   gender: Gender;
 
+  @Matches(Regex.DATE)
+  @IsOptional()
+  @ApiProperty({
+    description: 'Birthday of user',
+    type: 'string(Date)',
+    nullable: true,
+    required: false,
+    example: '1997-02-20',
+  })
+  birthday: Date;
+
   @IsNumberString()
   @MaxLength(Common.Phone.MAX_LENGTH)
   @ApiProperty({
