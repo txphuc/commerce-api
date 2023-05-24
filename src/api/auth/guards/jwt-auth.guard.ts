@@ -8,7 +8,7 @@ import { IS_PUBLIC_KEY } from '../strategies/public.strategy';
 export default class JwtAuthGuard extends AuthGuard('jwt') {
   private readonly logger = new Logger(JwtAuthGuard.name);
 
-  constructor(private reflector: Reflector) {
+  constructor(private readonly reflector: Reflector) {
     super(reflector);
   }
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {

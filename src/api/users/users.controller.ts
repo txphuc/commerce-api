@@ -2,9 +2,12 @@ import { Controller, Get, Logger, Param, ParseIntPipe } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { User } from './entities/user.entity';
+import { Serialize, SkipSerialize } from 'src/common/interceptors/serialize.interceptor';
+import { UserDto } from './dto/user.dto';
+import { CurrentUserType } from 'src/common/types/current-user.type';
 
 @ApiTags('Users')
+@Serialize(UserDto)
 @Controller('api/v1/users')
 export class UsersController {
   private readonly logger = new Logger(UsersController.name);
@@ -12,7 +15,8 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get('profile')
-  async getProfile(@CurrentUser() user: User) {
+  @SkipSerialize()
+  async getProfile(@CurrentUser() user: CurrentUserType) {
     return user;
   }
 
