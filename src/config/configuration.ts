@@ -1,6 +1,7 @@
 import { makeDataSourceOptions } from './data-source';
 
 export default () => ({
+  host: process.env.HOST ?? 'localhost',
   port: parseInt(process.env.PORT, 10) || 3000,
   database: makeDataSourceOptions(),
   jwt: {

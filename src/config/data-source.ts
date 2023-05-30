@@ -11,7 +11,7 @@ export function makeDataSourceOptions(): DataSourceOptions {
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
     migrations: [__dirname + '/../**/migrations/*{.ts,.js}'],
     logging: false,
-    synchronize: false,
+    synchronize: process.env.NODE_ENV === 'development' ? false : true,
   };
 
   return dataSource;
