@@ -132,3 +132,7 @@ dist
 
 # Database
 data/
+
+# SSL/TLS
+certs/csr.csr
+certs/private.key
