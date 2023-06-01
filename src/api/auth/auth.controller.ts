@@ -39,6 +39,12 @@ export class AuthController {
     return response.send(user);
   }
 
+  @Post('sign-out')
+  async signOut(@Req() request: RequestWithUser, @Res() response: Response) {
+    response.setHeader('Set-Cookie', this.authService.getCookieForSignOut());
+    return response.sendStatus(200);
+  }
+
   @Public()
   @UseGuards(GoogleAuthGuard)
   @Get('google/redirect')
