@@ -61,12 +61,16 @@ export class AuthService {
     return currentUser;
   }
 
-  public getCookieWithJwtToken(user: CurrentUserType) {
+  getCookieWithJwtToken(user: CurrentUserType) {
     const payload = user;
     const token = this.jwtService.sign(payload);
     return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get(
       'jwt.expiresIn',
     )}`;
+  }
+
+  getCookieForSignOut() {
+    return `Authentication=; HttpOnly; Path=/; Max-Age=0`;
   }
 
   async googleSignIn(user: CurrentUserType) {
