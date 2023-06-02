@@ -47,9 +47,12 @@ export class User extends Base {
   @Column({ name: 'activation_key', nullable: true })
   activationKey: string;
 
+  @Column({ name: 'activation_exp', nullable: true, type: 'timestamptz' })
+  activationExp: Date;
+
   @Column({ name: 'reset_token', nullable: true })
   resetToken: string;
 
-  @Column({ name: 'reset_token_exp', nullable: true })
+  @Column({ name: 'reset_token_exp', nullable: true, type: 'timestamptz' })
   resetTokenExp: Date;
 }

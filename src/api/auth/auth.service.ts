@@ -1,6 +1,11 @@
-import { Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import * as crypto from 'crypto';
-import moment from 'moment';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -33,10 +38,6 @@ export class AuthService {
     return randomBytes.toString('hex');
   }
 
-  generateResetTokenExpiration(): Date {
-    return moment().add(1, 'hour').toDate();
-  }
-
   async signUp(createUserDto: CreateUserDto) {
     return await this.usersService.create(createUserDto);
   }
@@ -45,6 +46,9 @@ export class AuthService {
     const user = await this.usersService.findOneByEmail(email);
     if (!user) {
       throw new NotFoundException(createErrorType(User.name, 'email', commonError.isNotFound));
+    }
+    if (!user.isActivated) {
+      throw new BadRequestException(authError.unConfirmedEmail);
     }
     if (!user.password) {
       throw new UnauthorizedException(authError.isNoPassword);
@@ -59,6 +63,10 @@ export class AuthService {
       role: user.role,
     };
     return currentUser;
+  }
+
+  async resendConfirmEmail(email: string): Promise<void> {
+    await this.usersService.resendConfirmEmail(email);
   }
 
   getCookieWithJwtToken(user: CurrentUserType) {
@@ -99,5 +107,9 @@ export class AuthService {
       role: userByEmail.role,
     };
     return currentUser;
+  }
+
+  async confirmEmail(email: string, activationKey: string) {
+    return await this.usersService.confirmEmail(email, activationKey);
   }
 }

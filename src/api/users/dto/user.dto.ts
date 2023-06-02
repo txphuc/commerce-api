@@ -29,4 +29,7 @@ export class UserDto {
 
   @Expose()
   avatar: Role;
+
+  @Expose()
+  isActivated: boolean;
 }
