@@ -1,4 +1,4 @@
-import { Body, Req, Controller, Post, UseGuards, Res, Logger, Get } from '@nestjs/common';
+import { Body, Req, Controller, Post, UseGuards, Res, Logger, Get, Query } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
@@ -42,6 +42,19 @@ export class AuthController {
   @Post('sign-out')
   async signOut(@Req() request: RequestWithUser, @Res() response: Response) {
     response.setHeader('Set-Cookie', this.authService.getCookieForSignOut());
+    return response.sendStatus(200);
+  }
+
+  @Public()
+  @Get('confirm-email')
+  async confirmEmail(@Query('email') email: string, @Query('activationKey') activationKey: string) {
+    return this.authService.confirmEmail(email, activationKey);
+  }
+
+  @Public()
+  @Post('resend-confirm-email')
+  async resendConfirmEmail(@Query('email') email: string, @Res() response: Response) {
+    await this.authService.resendConfirmEmail(email);
     return response.sendStatus(200);
   }
 

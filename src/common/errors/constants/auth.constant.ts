@@ -16,4 +16,24 @@ export const authError = {
     field: 'password',
     resource: User.name,
   },
+  unConfirmedEmail: {
+    code: 'auth-2003',
+    field: 'email',
+    resource: User.name,
+  },
+  alreadyConfirmedEmail: {
+    code: 'auth-2004',
+    field: 'email',
+    resource: User.name,
+  },
+  expiredActivation: {
+    code: 'auth-2005',
+    field: 'email',
+    resource: User.name,
+  },
+  wrongActivationKey: {
+    code: 'auth-2006',
+    field: 'email',
+    resource: User.name,
+  },
 };
