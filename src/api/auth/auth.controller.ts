@@ -1,4 +1,15 @@
-import { Body, Req, Controller, Post, UseGuards, Res, Logger, Get, Query } from '@nestjs/common';
+import {
+  Body,
+  Req,
+  Controller,
+  Post,
+  UseGuards,
+  Res,
+  Logger,
+  Get,
+  Query,
+  Patch,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
@@ -10,7 +21,10 @@ import { SignInDto } from './dto/sign-in.dto';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
 import { Serialize } from 'src/common/interceptors/serialize.interceptor';
 import { UserDto } from '../users/dto/user.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { EmailDto } from './dto/email.dto';
 @ApiTags('Auth')
+@Serialize(UserDto)
 @Controller('api/v1/auth')
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
@@ -53,8 +67,8 @@ export class AuthController {
 
   @Public()
   @Post('resend-confirm-email')
-  async resendConfirmEmail(@Query('email') email: string, @Res() response: Response) {
-    await this.authService.resendConfirmEmail(email);
+  async resendConfirmEmail(@Query() emailDto: EmailDto, @Res() response: Response) {
+    await this.authService.resendConfirmEmail(emailDto.email);
     return response.sendStatus(200);
   }
 
@@ -66,5 +80,19 @@ export class AuthController {
     const cookie = this.authService.getCookieWithJwtToken(user);
     response.setHeader('Set-Cookie', cookie);
     return response.send(user);
+  }
+
+  @Public()
+  @Patch('/reset-password')
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto, @Res() response: Response) {
+    await this.authService.resetPassword(resetPasswordDto);
+    return response.sendStatus(200);
+  }
+
+  @Public()
+  @Post('request-reset-password')
+  async requestResetPassword(@Query() emailDto: EmailDto, @Res() response: Response) {
+    await this.authService.requestResetPassword(emailDto.email);
+    return response.sendStatus(200);
   }
 }

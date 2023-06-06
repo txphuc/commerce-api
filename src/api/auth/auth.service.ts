@@ -17,6 +17,7 @@ import { User } from '../users/entities/user.entity';
 import { createErrorType } from 'src/common/types/error.type';
 import { authError } from 'src/common/errors/constants/auth.constant';
 import { CreateGoogleUserDto } from '../users/dto/create-google-user.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -111,5 +112,13 @@ export class AuthService {
 
   async confirmEmail(email: string, activationKey: string) {
     return await this.usersService.confirmEmail(email, activationKey);
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto) {
+    return await this.usersService.resetPassword(resetPasswordDto);
+  }
+
+  async requestResetPassword(email: string) {
+    return await this.usersService.requestResetPassword(email);
   }
 }
