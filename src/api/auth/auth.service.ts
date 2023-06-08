@@ -121,4 +121,8 @@ export class AuthService {
   async requestResetPassword(email: string) {
     return await this.usersService.requestResetPassword(email);
   }
+
+  async changePassword(email: string, oldPassword: string, newPassword: string) {
+    return await this.usersService.changePassword(email, oldPassword, newPassword);
+  }
 }

@@ -8,4 +8,6 @@ export default {
   'auth-2006': 'Wrong activation key',
   'auth-2007': 'Reset token has been expired',
   'auth-2008': 'Wrong Reset token',
+  'auth-2009': 'Duplicated old password',
+  'auth-2010': 'Wrong old password',
 };

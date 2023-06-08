@@ -8,7 +8,7 @@ import {
   Logger,
   Get,
   Query,
-  Patch,
+  Put,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
@@ -23,6 +23,7 @@ import { Serialize } from 'src/common/interceptors/serialize.interceptor';
 import { UserDto } from '../users/dto/user.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { EmailDto } from './dto/email.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 @ApiTags('Auth')
 @Serialize(UserDto)
 @Controller('api/v1/auth')
@@ -83,7 +84,7 @@ export class AuthController {
   }
 
   @Public()
-  @Patch('/reset-password')
+  @Put('/reset-password')
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto, @Res() response: Response) {
     await this.authService.resetPassword(resetPasswordDto);
     return response.sendStatus(200);
@@ -93,6 +94,13 @@ export class AuthController {
   @Post('request-reset-password')
   async requestResetPassword(@Query() emailDto: EmailDto, @Res() response: Response) {
     await this.authService.requestResetPassword(emailDto.email);
+    return response.sendStatus(200);
+  }
+
+  @Put('/change-password')
+  async changePassword(@Body() changePasswordDto: ChangePasswordDto, @Res() response: Response) {
+    const { email, oldPassword, newPassword } = changePasswordDto;
+    await this.authService.changePassword(email, oldPassword, newPassword);
     return response.sendStatus(200);
   }
 }
