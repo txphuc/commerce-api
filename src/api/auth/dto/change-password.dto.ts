@@ -4,7 +4,7 @@ import { IsOptional } from 'class-validator';
 import { User } from 'src/api/users/entities/user.entity';
 import { Common, Regex } from 'src/common/constants/common.constant';
 
-export class changePasswordDto {
+export class ChangePasswordDto {
   static resource = User.name;
 
   @IsEmail()
