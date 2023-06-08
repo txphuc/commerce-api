@@ -18,6 +18,8 @@ import { createErrorType } from 'src/common/types/error.type';
 import { getConfirmEmail, getResetPasswordEmail } from 'src/common/utils/html.util';
 import { ResetPasswordDto } from '../auth/dto/reset-password.dto';
 import * as crypto from 'crypto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { CurrentUserType } from 'src/common/types/current-user.type';
 
 @Injectable()
 export class UsersService {
@@ -61,6 +63,20 @@ export class UsersService {
     }
   }
 
+  async update(
+    id: number,
+    currentUser: CurrentUserType,
+    updateUserDto: UpdateUserDto,
+  ): Promise<User> {
+    const user = await this.findOneById(id);
+    if (!user) {
+      throw new BadRequestException(createErrorType(User.name, 'email', commonError.isNotFound));
+    }
+    Object.assign(user, updateUserDto);
+    user.updatedBy = currentUser.userId;
+    return await this.usersRepository.save(user);
+  }
+
   async createGoogleUser(createGoogleUserDto: CreateGoogleUserDto): Promise<User> {
     const user = this.usersRepository.create(createGoogleUserDto);
     user.role = Role.User;
@@ -89,6 +105,7 @@ export class UsersService {
     user.isActivated = true;
     user.activationKey = null;
     user.activationExp = null;
+    user.updatedBy = user.id;
     return await this.usersRepository.save(user);
   }
 
@@ -119,6 +136,7 @@ export class UsersService {
     user.resetToken = null;
     user.resetTokenExp = null;
     user.password = await hash(password);
+    user.updatedBy = user.id;
     await this.usersRepository.save(user);
   }
 
