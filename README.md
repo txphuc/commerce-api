@@ -24,6 +24,13 @@ POSTGRES_DB=example
 JWT_SECRET=example
 JWT_EXPIRES_IN=example
 
+# Email
+EMAIL_HOST=example
+EMAIL_PORT=example
+EMAIL_USERNAME=example
+EMAIL_PASSWORD=example
+EMAIL_CONFIRMATION_URL=example
+
 # Google
 GOOGLE_AUTH_CLIENT_ID=example
 GOOGLE_AUTH_CLIENT_SECRET=example

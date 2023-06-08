@@ -15,7 +15,9 @@ import { ConfigService } from '@nestjs/config';
 import { MailOptionsType } from 'src/common/types/mail-options.type';
 import { addMinutes, isAfter } from 'date-fns';
 import { createErrorType } from 'src/common/types/error.type';
-import { getConfirmEmail } from 'src/common/utils/html.util';
+import { getConfirmEmail, getResetPasswordEmail } from 'src/common/utils/html.util';
+import { ResetPasswordDto } from '../auth/dto/reset-password.dto';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class UsersService {
@@ -79,7 +81,7 @@ export class UsersService {
       throw new BadRequestException(authError.alreadyConfirmedEmail);
     }
     if (user.activationExp && isAfter(new Date(), user.activationExp)) {
-      throw new BadRequestException(authError.expiredActivation);
+      throw new BadRequestException(authError.expiredActivationKey);
     }
     if (user.activationKey !== activationKey) {
       throw new BadRequestException(authError.wrongActivationKey);
@@ -99,6 +101,42 @@ export class UsersService {
       throw new BadRequestException(authError.alreadyConfirmedEmail);
     }
     await this.sendConfirmEmail(user);
+    await this.usersRepository.save(user);
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto) {
+    const { email, password, resetToken } = resetPasswordDto;
+    const user = await this.findOneByEmail(email);
+    if (!user) {
+      throw new BadRequestException(createErrorType(User.name, 'email', commonError.isNotFound));
+    }
+    if (isAfter(new Date(), user.resetTokenExp)) {
+      throw new BadRequestException(authError.expiredResetToken);
+    }
+    if (resetToken !== user.resetToken) {
+      throw new BadRequestException(authError.wrongResetToken);
+    }
+    user.resetToken = null;
+    user.resetTokenExp = null;
+    user.password = await hash(password);
+    await this.usersRepository.save(user);
+  }
+
+  async requestResetPassword(email: string) {
+    const user = await this.findOneByEmail(email);
+    if (!user) {
+      throw new BadRequestException(createErrorType(User.name, 'email', commonError.isNotFound));
+    }
+    user.resetToken = crypto.randomBytes(3).toString('hex');
+    const now = new Date();
+    user.resetTokenExp = addMinutes(now, 30);
+    const mailOptions: MailOptionsType = {
+      from: this.configService.get('email.username'),
+      to: user.email,
+      subject: 'Reset user password',
+      html: getResetPasswordEmail(user.resetToken),
+    };
+    await this.emailsService.sendEmail(mailOptions);
     await this.usersRepository.save(user);
   }
 

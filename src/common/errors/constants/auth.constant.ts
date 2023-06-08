@@ -26,13 +26,23 @@ export const authError = {
     field: 'email',
     resource: User.name,
   },
-  expiredActivation: {
+  expiredActivationKey: {
     code: 'auth-2005',
     field: 'email',
     resource: User.name,
   },
   wrongActivationKey: {
     code: 'auth-2006',
+    field: 'email',
+    resource: User.name,
+  },
+  expiredResetToken: {
+    code: 'auth-2007',
+    field: 'email',
+    resource: User.name,
+  },
+  wrongResetToken: {
+    code: 'auth-2008',
     field: 'email',
     resource: User.name,
   },

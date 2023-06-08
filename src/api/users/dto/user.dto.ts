@@ -4,6 +4,9 @@ import { Role } from 'src/common/enums/role.enum';
 
 export class UserDto {
   @Expose()
+  userId: number;
+
+  @Expose()
   id: number;
 
   @Expose()

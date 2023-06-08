@@ -4,6 +4,8 @@ export default {
   'auth-2002': 'Incorrect password',
   'auth-2003': 'User email has not been confirmed yet',
   'auth-2004': 'User email already confirmed',
-  'auth-2005': 'Activation key has been expired. Please try again',
-  'auth-2006': 'Your activation key is wrong. Please try again',
+  'auth-2005': 'Activation key has been expired',
+  'auth-2006': 'Wrong activation key',
+  'auth-2007': 'Reset token has been expired',
+  'auth-2008': 'Wrong Reset token',
 };
