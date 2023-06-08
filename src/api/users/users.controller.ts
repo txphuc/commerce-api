@@ -1,4 +1,4 @@
-import { Controller, Get, Logger, Param, ParseIntPipe, Query } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Param, ParseIntPipe, Patch, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
@@ -6,6 +6,7 @@ import { Serialize, SkipSerialize } from 'src/common/interceptors/serialize.inte
 import { UserDto } from './dto/user.dto';
 import { CurrentUserType } from 'src/common/types/current-user.type';
 import { PageOptionsDto } from 'src/common/dto/pagination/page-options.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @ApiTags('Users')
 @Serialize(UserDto)
@@ -29,5 +30,14 @@ export class UsersController {
   @Get(':id')
   async findOneById(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.findOneById(id);
+  }
+
+  @Patch(':id')
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() currentUser: CurrentUserType,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.usersService.update(id, currentUser, updateUserDto);
   }
 }
