@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, Logger, NotFoundException } from '@nes
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Role } from 'src/common/enums/role.enum';
-import { hash } from 'src/common/utils/bcrypt.util';
+import { compare, hash } from 'src/common/utils/bcrypt.util';
 import { authError } from 'src/common/errors/constants/auth.constant';
 import { commonError } from 'src/common/errors/constants/common.constant';
 import { CreateGoogleUserDto } from './dto/create-google-user.dto';
@@ -138,6 +138,23 @@ export class UsersService {
     };
     await this.emailsService.sendEmail(mailOptions);
     await this.usersRepository.save(user);
+  }
+
+  async changePassword(email: string, oldPassword: string, newPassword: string) {
+    const user = await this.findOneByEmail(email);
+    if (!user) {
+      throw new BadRequestException(createErrorType(User.name, 'email', commonError.isNotFound));
+    }
+    if (user.password && (!oldPassword || !(await compare(oldPassword, user.password)))) {
+      throw new BadRequestException(authError.wrongOldPassword);
+    }
+    if (user.password && (await compare(newPassword, user.password))) {
+      throw new BadRequestException(authError.duplicatedOldPassword);
+    }
+    if (!user.password || !(await compare(newPassword, user.password))) {
+      user.password = await hash(newPassword);
+      this.usersRepository.save(user);
+    }
   }
 
   private async sendConfirmEmail(user: User): Promise<void> {

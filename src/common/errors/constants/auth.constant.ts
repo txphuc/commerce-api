@@ -46,4 +46,14 @@ export const authError = {
     field: 'email',
     resource: User.name,
   },
+  duplicatedOldPassword: {
+    code: 'auth-2009',
+    field: 'password',
+    resource: User.name,
+  },
+  wrongOldPassword: {
+    code: 'auth-2010',
+    field: 'password',
+    resource: User.name,
+  },
 };
