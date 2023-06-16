@@ -11,6 +11,12 @@ export const commonError = {
   min: '1009',
   max: '1010',
   isNumberString: '1011',
+  isEnum: '1012',
+  minLength: '1013',
+  maxLength: '1014',
 
   isNotFound: '1100',
+  nothingChange: '1101',
+
+  forbiddenResource: '1200',
 };

@@ -1,22 +1,11 @@
-import { IsEmail, IsString, Matches, MaxLength } from '@nestjs/class-validator';
+import { IsString, Matches } from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
 import { User } from 'src/api/users/entities/user.entity';
-import { Common, Regex } from 'src/common/constants/common.constant';
+import { Regex } from 'src/common/constants/common.constant';
 
 export class ChangePasswordDto {
   static resource = User.name;
-
-  @IsEmail()
-  @MaxLength(Common.Email.MAX_LENGTH)
-  @ApiProperty({
-    description: 'Email of user',
-    type: String,
-    nullable: false,
-    required: true,
-    example: 'example@email.com',
-  })
-  email: string;
 
   @IsString()
   @IsOptional()

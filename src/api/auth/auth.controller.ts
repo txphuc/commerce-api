@@ -24,6 +24,8 @@ import { UserDto } from '../users/dto/user.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { EmailDto } from './dto/email.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { CurrentUserType } from 'src/common/types/current-user.type';
 @ApiTags('Auth')
 @Serialize(UserDto)
 @Controller('api/v1/auth')
@@ -98,9 +100,13 @@ export class AuthController {
   }
 
   @Put('/change-password')
-  async changePassword(@Body() changePasswordDto: ChangePasswordDto, @Res() response: Response) {
-    const { email, oldPassword, newPassword } = changePasswordDto;
-    await this.authService.changePassword(email, oldPassword, newPassword);
+  async changePassword(
+    @CurrentUser() currentUser: CurrentUserType,
+    @Body() changePasswordDto: ChangePasswordDto,
+    @Res() response: Response,
+  ) {
+    const { oldPassword, newPassword } = changePasswordDto;
+    await this.authService.changePassword(currentUser.email, oldPassword, newPassword);
     return response.sendStatus(200);
   }
 }

@@ -6,8 +6,8 @@ import { Common, Regex } from 'src/common/constants/common.constant';
 export class SignInDto {
   static resource = User.name;
 
-  @IsEmail()
   @MaxLength(Common.Email.MAX_LENGTH)
+  @IsEmail()
   @ApiProperty({
     description: 'Email of user',
     type: String,
