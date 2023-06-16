@@ -16,8 +16,8 @@ import { Role } from 'src/common/enums/role.enum';
 export class CreateUserDto {
   static resource = User.name;
 
-  @IsEmail()
   @MaxLength(Common.Email.MAX_LENGTH)
+  @IsEmail()
   @ApiProperty({
     description: 'Email of user',
     type: String,
@@ -37,8 +37,8 @@ export class CreateUserDto {
   })
   password: string;
 
-  @IsString()
   @MaxLength(Common.FullName.MAX_LENGTH)
+  @IsString()
   @ApiProperty({
     description: 'Full name of user',
     type: String,
@@ -59,7 +59,6 @@ export class CreateUserDto {
   gender: Gender;
 
   @Matches(Regex.DATE)
-  @IsOptional()
   @ApiProperty({
     description: 'Birthday of user',
     type: 'string(Date)',
@@ -69,8 +68,8 @@ export class CreateUserDto {
   })
   birthday: Date;
 
-  @IsNumberString()
   @MaxLength(Common.Phone.MAX_LENGTH)
+  @IsNumberString()
   @ApiProperty({
     description: 'Phone number of user',
     type: String,

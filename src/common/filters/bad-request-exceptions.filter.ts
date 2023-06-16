@@ -44,7 +44,7 @@ export class BadRequestExceptionsFilter implements ExceptionFilter<BadRequestExc
 
         errors.push(
           ...messages.reduce((arr, { constraints, target, property }) => {
-            const code = indexError[`${Object.keys(constraints)[0]}`];
+            const code = indexError[Object.keys(constraints)[0]];
 
             arr.push({
               resource: (target.constructor as unknown as TargetConstructor).resource,

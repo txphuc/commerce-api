@@ -6,8 +6,8 @@ import { Common } from 'src/common/constants/common.constant';
 export class CreateGoogleUserDto {
   static resource = User.name;
 
-  @IsEmail()
   @MaxLength(Common.Email.MAX_LENGTH)
+  @IsEmail()
   @ApiProperty({
     description: 'Email of user',
     type: String,
@@ -17,8 +17,8 @@ export class CreateGoogleUserDto {
   })
   email: string;
 
-  @IsString()
   @MaxLength(Common.FullName.MAX_LENGTH)
+  @IsString()
   @ApiProperty({
     description: 'Full name of user',
     type: String,

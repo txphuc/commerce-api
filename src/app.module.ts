@@ -6,6 +6,7 @@ import { APP_GUARD } from '@nestjs/core';
 import JwtAuthGuard from './api/auth/guards/jwt-auth.guard';
 import LogsMiddleware from './middlewares/logger.middleware';
 import { TrimStringsMiddleware } from './middlewares/trim-strings.middleware';
+import { OwnerGuard } from './api/auth/guards/owner.guard';
 
 @Module({
   imports: generateModuleSet(),
@@ -15,6 +16,10 @@ import { TrimStringsMiddleware } from './middlewares/trim-strings.middleware';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: OwnerGuard,
     },
   ],
 })

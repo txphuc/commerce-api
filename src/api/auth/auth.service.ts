@@ -91,7 +91,10 @@ export class AuthService {
     fullName: string,
     avatar: string,
   ): Promise<CurrentUserType> {
-    const userByEmail = await this.usersService.findOneByEmail(email);
+    const userByEmail = await this.usersService.findOneByEmailWithDeleted(email);
+    if (userByEmail.deletedAt) {
+      throw new BadRequestException(authError.alreadyDeletedUser);
+    }
     if (!userByEmail) {
       const userDto = new CreateGoogleUserDto(email, fullName, avatar);
       const user = await this.usersService.createGoogleUser(userDto);

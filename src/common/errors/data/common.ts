@@ -11,6 +11,12 @@ export default {
   '1009': 'Should not be smaller than min value',
   '1010': 'Should not be greater than max value',
   '1011': 'Should be number string',
+  '1012': 'Should be valid enum',
+  '1013': 'Should not be smaller than min length',
+  '1014': 'Should not be smaller than max length',
 
   '1100': 'Not found',
+  '1101': 'There is nothing to change',
+
+  '1200': 'Forbidden resource',
 };

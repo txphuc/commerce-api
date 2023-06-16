@@ -10,4 +10,5 @@ export default {
   'auth-2008': 'Wrong Reset token',
   'auth-2009': 'Duplicated old password',
   'auth-2010': 'Wrong old password',
+  'auth-2011': 'Your account has been deleted. Please contact admin if something is wrong',
 };

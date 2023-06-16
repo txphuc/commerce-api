@@ -56,4 +56,10 @@ export const authError = {
     field: 'password',
     resource: User.name,
   },
+
+  alreadyDeletedUser: {
+    code: 'auth-2011',
+    field: 'email',
+    resource: User.name,
+  },
 };

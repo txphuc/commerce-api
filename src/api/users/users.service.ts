@@ -1,4 +1,10 @@
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Role } from 'src/common/enums/role.enum';
@@ -20,6 +26,7 @@ import { ResetPasswordDto } from '../auth/dto/reset-password.dto';
 import * as crypto from 'crypto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CurrentUserType } from 'src/common/types/current-user.type';
+import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 
 @Injectable()
 export class UsersService {
@@ -32,6 +39,10 @@ export class UsersService {
 
   async findOneByEmail(email: string): Promise<User> {
     return await this.usersRepository.findOneBy({ email });
+  }
+
+  async findOneByEmailWithDeleted(email: string): Promise<User> {
+    return await this.usersRepository.findOne({ where: { email }, withDeleted: true });
   }
 
   async findOneById(id: number) {
@@ -47,9 +58,12 @@ export class UsersService {
   }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    let user = await this.findOneByEmail(createUserDto.email);
+    let user = await this.findOneByEmailWithDeleted(createUserDto.email);
+    if (user.deletedAt) {
+      throw new BadRequestException(authError.alreadyDeletedUser);
+    }
     if (user) {
-      if (user.isActivated) {
+      if (!user.isActivated) {
         throw new BadRequestException(authError.unConfirmedEmail);
       } else {
         throw new BadRequestException(authError.isExistEmail);
@@ -68,13 +82,35 @@ export class UsersService {
     currentUser: CurrentUserType,
     updateUserDto: UpdateUserDto,
   ): Promise<User> {
+    if (currentUser.role === Role.User && currentUser.userId !== id) {
+      throw new ForbiddenException(
+        createErrorType(User.name, 'role', commonError.forbiddenResource),
+      );
+    }
     const user = await this.findOneById(id);
     if (!user) {
-      throw new BadRequestException(createErrorType(User.name, 'email', commonError.isNotFound));
+      throw new BadRequestException(createErrorType(User.name, 'id', commonError.isNotFound));
     }
     Object.assign(user, updateUserDto);
     user.updatedBy = currentUser.userId;
     return await this.usersRepository.save(user);
+  }
+
+  async updateUserRole(
+    id: number,
+    currentUser: CurrentUserType,
+    updateUserRoleDto: UpdateUserRoleDto,
+  ) {
+    const user = await this.findOneById(id);
+    if (!user) {
+      throw new BadRequestException(createErrorType(User.name, 'id', commonError.isNotFound));
+    }
+    if (updateUserRoleDto.role === user.role) {
+      throw new BadRequestException(createErrorType(User.name, 'role', commonError.nothingChange));
+    }
+    user.role = updateUserRoleDto.role;
+    user.updatedBy = currentUser.userId;
+    await this.usersRepository.save(user);
   }
 
   async createGoogleUser(createGoogleUserDto: CreateGoogleUserDto): Promise<User> {
@@ -173,6 +209,16 @@ export class UsersService {
       user.password = await hash(newPassword);
       this.usersRepository.save(user);
     }
+  }
+
+  async softDelete(id: number, currentUser: CurrentUserType) {
+    const user = await this.findOneById(id);
+    if (!user) {
+      throw new BadRequestException(createErrorType(User.name, 'id', commonError.isNotFound));
+    }
+    user.deletedAt = new Date();
+    user.updatedBy = currentUser.userId;
+    await this.usersRepository.save(user);
   }
 
   private async sendConfirmEmail(user: User): Promise<void> {

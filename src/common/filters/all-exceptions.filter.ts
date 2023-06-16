@@ -2,6 +2,7 @@ import {
   ArgumentsHost,
   Catch,
   ExceptionFilter,
+  ForbiddenException,
   Logger,
   NotFoundException,
   UnauthorizedException,
@@ -19,10 +20,13 @@ type ExceptionRes = {
   message: Constraint[];
 };
 
-@Catch(NotFoundException, UnauthorizedException)
+@Catch(NotFoundException, UnauthorizedException, ForbiddenException)
 export class AllExceptionsFilter implements ExceptionFilter {
   private readonly logger = new Logger(AllExceptionsFilter.name);
-  catch(exception: NotFoundException | UnauthorizedException, host: ArgumentsHost) {
+  catch(
+    exception: NotFoundException | UnauthorizedException | ForbiddenException,
+    host: ArgumentsHost,
+  ) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const status = exception.getStatus();
