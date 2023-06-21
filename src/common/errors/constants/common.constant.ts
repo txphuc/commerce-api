@@ -17,6 +17,7 @@ export const commonError = {
 
   isNotFound: '1100',
   nothingChange: '1101',
+  alreadyExists: '1102',
 
   forbiddenResource: '1200',
 };

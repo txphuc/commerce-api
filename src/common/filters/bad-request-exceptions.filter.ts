@@ -32,7 +32,7 @@ export class BadRequestExceptionsFilter implements ExceptionFilter<BadRequestExc
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const status = exception.getStatus();
-    const exceptionRes = exception.getResponse() as ExceptionRes | ErrorType;
+    const exceptionRes = exception.getResponse() as ExceptionRes;
     const errors: ErrorType[] = [];
     if (exceptionRes.message) {
       if (typeof exceptionRes.message === 'string') {
@@ -41,24 +41,36 @@ export class BadRequestExceptionsFilter implements ExceptionFilter<BadRequestExc
         });
       } else {
         const messages = exceptionRes.message as ValidationError[];
+        try {
+          errors.push(
+            ...messages.reduce((arr, { constraints, target, property }) => {
+              Object.keys(constraints).forEach((constraint) => {
+                const code = indexError[constraint];
 
-        errors.push(
-          ...messages.reduce((arr, { constraints, target, property }) => {
-            const code = indexError[Object.keys(constraints)[0]];
-
-            arr.push({
-              resource: (target.constructor as unknown as TargetConstructor).resource,
-              field: property,
+                arr.push({
+                  resource: (target.constructor as unknown as TargetConstructor).resource,
+                  field: property,
+                  code,
+                  message: data[code],
+                });
+              });
+              return arr;
+            }, []),
+          );
+        } catch (err) {
+          const messages = exceptionRes.message as ErrorType[];
+          messages.forEach(({ resource, field, code }) =>
+            errors.push({
+              resource,
+              field,
               code,
               message: data[code],
-            });
-
-            return arr;
-          }, []),
-        );
+            }),
+          );
+        }
       }
     } else {
-      const { resource, field, code } = exceptionRes as ErrorType;
+      const { resource, field, code } = exception.getResponse() as ErrorType;
 
       errors.push({
         resource,

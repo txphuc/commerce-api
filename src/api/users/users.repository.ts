@@ -13,8 +13,8 @@ export class UsersRepository extends Repository<User> {
   }
   async getAllUsersPagination(pageOptionsDto: PageOptionsDto): Promise<PageDto<User>> {
     const { search, order, page, take } = pageOptionsDto;
-    console.log(page);
     const queryBuilder = this.createQueryBuilder('user');
+    queryBuilder.withDeleted();
     queryBuilder.orderBy('user.id', order);
     if (page) {
       queryBuilder.skip(getSkip(pageOptionsDto)).take(take);

@@ -17,6 +17,7 @@ export default {
 
   '1100': 'Not found',
   '1101': 'There is nothing to change',
+  '1102': 'Already exists',
 
   '1200': 'Forbidden resource',
 };
