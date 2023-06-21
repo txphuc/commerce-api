@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Role } from 'src/common/enums/role.enum';
@@ -59,20 +53,16 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     let user = await this.findOneByEmailWithDeleted(createUserDto.email);
-    if (user.deletedAt) {
+    if (user?.deletedAt) {
       throw new BadRequestException(authError.alreadyDeletedUser);
     }
     if (user) {
-      if (!user.isActivated) {
-        throw new BadRequestException(authError.unConfirmedEmail);
-      } else {
-        throw new BadRequestException(authError.isExistEmail);
-      }
+      throw new BadRequestException(authError.isExistEmail);
     } else {
       createUserDto.role = Role.User;
       user = this.usersRepository.create(createUserDto);
       user.password = await hash(createUserDto.password);
-      this.sendConfirmEmail(user);
+      await this.sendConfirmEmail(user);
       return await this.usersRepository.save(user);
     }
   }
@@ -82,11 +72,6 @@ export class UsersService {
     currentUser: CurrentUserType,
     updateUserDto: UpdateUserDto,
   ): Promise<User> {
-    if (currentUser.role === Role.User && currentUser.userId !== id) {
-      throw new ForbiddenException(
-        createErrorType(User.name, 'role', commonError.forbiddenResource),
-      );
-    }
     const user = await this.findOneById(id);
     if (!user) {
       throw new BadRequestException(createErrorType(User.name, 'id', commonError.isNotFound));

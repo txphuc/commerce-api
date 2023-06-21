@@ -36,9 +36,8 @@ export class AuthController {
 
   @Public()
   @Post('sign-up')
-  @Serialize(UserDto)
   async signUp(@Body() createUserDto: CreateUserDto) {
-    return this.authService.signUp(createUserDto);
+    return await this.authService.signUp(createUserDto);
   }
 
   @Public()

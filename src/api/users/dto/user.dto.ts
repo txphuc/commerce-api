@@ -35,4 +35,19 @@ export class UserDto {
 
   @Expose()
   isActivated: boolean;
+
+  @Expose()
+  createdBy: number;
+
+  @Expose()
+  createdAt: Date;
+
+  @Expose()
+  updatedBy: number;
+
+  @Expose()
+  updatedAt: Date;
+
+  @Expose()
+  deletedAt: Date;
 }

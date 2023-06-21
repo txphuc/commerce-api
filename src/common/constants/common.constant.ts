@@ -8,6 +8,12 @@ export const Common = {
   FullName: {
     MAX_LENGTH: 128,
   },
+  Name: {
+    MAX_LENGTH: 64,
+  },
+  Description: {
+    MAX_LENGTH: 256,
+  },
 };
 
 export const Regex = {
