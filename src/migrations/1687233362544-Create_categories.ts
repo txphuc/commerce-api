@@ -8,7 +8,7 @@ export class CreateCategories1687233362544 implements MigrationInterface {
       `CREATE TABLE "categories" (
         "id" SERIAL NOT NULL,
         "name" character varying(64) NOT NULL,
-        "description" character varying(256),
+        "description" character varying(1024),
         "parent_id" integer,
         "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
         "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
@@ -19,7 +19,7 @@ export class CreateCategories1687233362544 implements MigrationInterface {
       )`,
     );
     await queryRunner.query(
-      `CREATE UNIQUE INDEX "categories_name_index" ON "categories" ("name") `,
+      `CREATE UNIQUE INDEX "categories_name_index" ON "categories" ("name") WHERE deleted_at IS NULL`,
     );
     await queryRunner.query(
       `ALTER TABLE "categories" ADD CONSTRAINT "categories_category_id_fkey" FOREIGN KEY ("parent_id") REFERENCES "categories"("id") ON DELETE CASCADE ON UPDATE CASCADE`,

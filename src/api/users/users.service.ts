@@ -77,7 +77,7 @@ export class UsersService {
       throw new BadRequestException(createErrorType(User.name, 'id', commonError.isNotFound));
     }
     Object.assign(user, updateUserDto);
-    user.updatedBy = currentUser.userId;
+    user.setUpdatedUser(currentUser.userId);
     return await this.usersRepository.save(user);
   }
 
@@ -94,7 +94,7 @@ export class UsersService {
       throw new BadRequestException(createErrorType(User.name, 'role', commonError.nothingChange));
     }
     user.role = updateUserRoleDto.role;
-    user.updatedBy = currentUser.userId;
+    user.setUpdatedUser(currentUser.userId);
     await this.usersRepository.save(user);
   }
 
@@ -126,7 +126,7 @@ export class UsersService {
     user.isActivated = true;
     user.activationKey = null;
     user.activationExp = null;
-    user.updatedBy = user.id;
+    user.setUpdatedUser(user.id);
     return await this.usersRepository.save(user);
   }
 
@@ -157,7 +157,7 @@ export class UsersService {
     user.resetToken = null;
     user.resetTokenExp = null;
     user.password = await hash(password);
-    user.updatedBy = user.id;
+    user.setUpdatedUser(user.id);
     await this.usersRepository.save(user);
   }
 
@@ -197,12 +197,28 @@ export class UsersService {
   }
 
   async softDelete(id: number, currentUser: CurrentUserType) {
-    const user = await this.findOneById(id);
+    const user = await this.usersRepository.findOneBy({ id: id });
     if (!user) {
       throw new BadRequestException(createErrorType(User.name, 'id', commonError.isNotFound));
     }
     user.deletedAt = new Date();
-    user.updatedBy = currentUser.userId;
+    user.setUpdatedUser(currentUser.userId);
+    await this.usersRepository.save(user);
+  }
+
+  async unDelete(id: number, currentUser: CurrentUserType) {
+    const user = await this.usersRepository.findOne({
+      where: { id: id },
+      withDeleted: true,
+    });
+    if (!user) {
+      throw new BadRequestException(createErrorType(User.name, 'id', commonError.isNotFound));
+    }
+    if (user.deletedAt === null) {
+      throw new BadRequestException(createErrorType(User.name, 'id', commonError.notDeletedYet));
+    }
+    user.deletedAt = null;
+    user.setCreatedUser(currentUser.userId);
     await this.usersRepository.save(user);
   }
 

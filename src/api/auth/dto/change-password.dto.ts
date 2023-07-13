@@ -1,6 +1,5 @@
-import { IsString, Matches } from '@nestjs/class-validator';
+import { IsOptional, IsString, Matches } from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional } from 'class-validator';
 import { User } from 'src/api/users/entities/user.entity';
 import { Regex } from 'src/common/constants/common.constant';
 

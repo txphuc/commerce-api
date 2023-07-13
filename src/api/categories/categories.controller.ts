@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   Res,
   UseGuards,
+  Put,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -44,7 +45,7 @@ export class CategoriesController {
     return await this.categoriesService.findOneById(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   @UseGuards(RoleGuard(Role.Admin))
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -65,9 +66,23 @@ export class CategoriesController {
     return response.sendStatus(204);
   }
 
+  @Patch(':id/restore')
+  @UseGuards(RoleGuard(Role.Admin))
+  async unDelete(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() currentUser: CurrentUserType,
+    @Res() response: Response,
+  ) {
+    await this.categoriesService.unDelete(id, currentUser);
+    return response.sendStatus(204);
+  }
+
   @Get('parent/:id')
   @Public()
-  async getAllCategoriesByParent(@Param('id', ParseIntPipe) id: number) {
-    return await this.categoriesService.getAllCategoriesByParent(id);
+  async getAllCategoriesByParent(
+    @CurrentUser() currentUser: CurrentUserType,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return await this.categoriesService.getAllCategoriesByParent(currentUser, id);
   }
 }

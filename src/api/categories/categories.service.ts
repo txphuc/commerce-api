@@ -7,7 +7,8 @@ import { commonError } from 'src/common/errors/constants/common.constant';
 import { Category } from './entities/category.entity';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { IsNull, Not } from 'typeorm';
-import { CategoryError } from 'src/common/errors/constants/category.constant';
+import { categoryError } from 'src/common/errors/constants/category.constant';
+import { Role } from 'src/common/enums/role.enum';
 
 @Injectable()
 export class CategoriesService {
@@ -38,7 +39,7 @@ export class CategoriesService {
     }
 
     category = this.categoriesRepository.create(createCategoryDto);
-    category.createdBy = currentUser.userId;
+    category.setUpdatedUser(currentUser.userId);
 
     return await this.categoriesRepository.save(category);
   }
@@ -53,7 +54,7 @@ export class CategoriesService {
 
   async update(id: number, currentUser: CurrentUserType, updateCategoryDto: UpdateCategoryDto) {
     if (id <= updateCategoryDto.parentId) {
-      throw new BadRequestException(CategoryError.invalidParent);
+      throw new BadRequestException(categoryError.invalidParent);
     }
     const errors = [];
     const category = await this.categoriesRepository.findOneBy({ id: id });
@@ -82,7 +83,7 @@ export class CategoriesService {
       throw new BadRequestException(errors);
     }
     Object.assign(category, updateCategoryDto);
-    category.updatedBy = currentUser.userId;
+    category.setUpdatedUser(currentUser.userId);
 
     return await this.categoriesRepository.save(category);
   }
@@ -92,15 +93,37 @@ export class CategoriesService {
     if (!category) {
       throw new BadRequestException(createErrorType(Category.name, 'id', commonError.isNotFound));
     }
-    category.updatedBy = currentUser.userId;
+    category.setUpdatedUser(currentUser.userId);
     category.deletedAt = new Date();
     await this.categoriesRepository.save(category);
   }
 
-  async getAllCategoriesByParent(parentId?: number): Promise<Category[]> {
+  async unDelete(id: number, currentUser: CurrentUserType) {
+    const category = await this.categoriesRepository.findOne({
+      where: { id: id },
+      withDeleted: true,
+    });
+    if (!category) {
+      throw new BadRequestException(createErrorType(Category.name, 'id', commonError.isNotFound));
+    }
+    if (category.deletedAt === null) {
+      throw new BadRequestException(
+        createErrorType(Category.name, 'id', commonError.notDeletedYet),
+      );
+    }
+    category.deletedAt = null;
+    category.setCreatedUser(currentUser.userId);
+    await this.categoriesRepository.save(category);
+  }
+
+  async getAllCategoriesByParent(
+    currentUser: CurrentUserType,
+    parentId?: number,
+  ): Promise<Category[]> {
     const categories = await this.categoriesRepository.find({
       where: { parentId: parentId === 0 ? IsNull() : parentId },
       order: { name: 'ASC' },
+      withDeleted: currentUser?.role === Role.Admin,
     });
     return categories;
   }

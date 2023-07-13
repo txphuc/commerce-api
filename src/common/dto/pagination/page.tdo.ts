@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsArray } from 'class-validator';
 import { PageMetaDto } from './page-meta.dto';
+import { IsArray } from '@nestjs/class-validator';
 
 @Expose()
 export class PageDto<T> {

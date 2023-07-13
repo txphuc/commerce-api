@@ -9,7 +9,7 @@ import { CurrentUserType } from 'src/common/types/current-user.type';
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private readonly configService: ConfigService,
-    private readonly userService: UsersService,
+    private readonly usersService: UsersService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
@@ -23,7 +23,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: CurrentUserType) {
     try {
-      const user = await this.userService.findOneById(payload.userId);
+      const user = await this.usersService.findOneById(payload.userId);
 
       const currentUser: CurrentUserType = {
         userId: user.id,
@@ -31,7 +31,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         role: user.role,
       };
       return currentUser;
-    } catch (err) {}
-    throw new UnauthorizedException();
+    } catch (err) {
+      throw new UnauthorizedException();
+    }
   }
 }

@@ -1,3 +1,4 @@
+import { Product } from '../../products/entities/product.entity';
 import { Common } from '../../../common/constants/common.constant';
 import { Base } from '../../../common/entities/base.entity';
 import {
@@ -11,7 +12,7 @@ import {
 } from 'typeorm';
 
 @Entity({ name: 'categories' })
-@Index('categories_name_index', ['name'], { unique: true })
+@Index('categories_name_index', ['name'], { unique: true, where: 'deleted_at IS NULL' })
 export class Category extends Base {
   @PrimaryGeneratedColumn({ primaryKeyConstraintName: 'categories_pkey' })
   id: number;
@@ -25,6 +26,9 @@ export class Category extends Base {
   @Column({ name: 'parent_id', nullable: true })
   parentId: number;
 
+  @Column('varchar', { name: 'specification_list', nullable: true, array: true })
+  specificationList: string[];
+
   @ManyToOne(() => Category, (category) => category.children, {
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
@@ -37,4 +41,10 @@ export class Category extends Base {
     onDelete: 'CASCADE',
   })
   children: Category[];
+
+  @OneToMany(() => Product, (product) => product.category, {
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+  })
+  products: Product[];
 }

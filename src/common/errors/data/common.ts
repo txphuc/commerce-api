@@ -18,6 +18,7 @@ export default {
   '1100': 'Not found',
   '1101': 'There is nothing to change',
   '1102': 'Already exists',
+  '1103': 'This resource has not been deleted yet. No restoration needed',
 
   '1200': 'Forbidden resource',
 };

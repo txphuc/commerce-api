@@ -7,6 +7,7 @@ import {
   Param,
   ParseIntPipe,
   Patch,
+  Put,
   Query,
   Res,
   UseGuards,
@@ -49,7 +50,7 @@ export class UsersController {
     return this.usersService.findOneById(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
     @CurrentUser() currentUser: CurrentUserType,
@@ -78,6 +79,17 @@ export class UsersController {
     @Res() response: Response,
   ) {
     await this.usersService.softDelete(id, currentUser);
+    return response.sendStatus(204);
+  }
+
+  @Patch(':id/restore')
+  @UseGuards(RoleGuard(Role.Admin))
+  async unDelete(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() currentUser: CurrentUserType,
+    @Res() response: Response,
+  ) {
+    await this.usersService.unDelete(id, currentUser);
     return response.sendStatus(204);
   }
 }
