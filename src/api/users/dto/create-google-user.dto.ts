@@ -1,7 +1,7 @@
-import { IsEmail, IsOptional, IsString, MaxLength } from '@nestjs/class-validator';
+import { IsEmail, IsOptional, IsString, Matches, MaxLength } from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from 'src/api/users/entities/user.entity';
-import { Common } from 'src/common/constants/common.constant';
+import { Common, Regex } from 'src/common/constants/common.constant';
 
 export class CreateGoogleUserDto {
   static resource = User.name;
@@ -28,7 +28,7 @@ export class CreateGoogleUserDto {
   })
   fullName: string;
 
-  @IsString()
+  @Matches(Regex.IMAGE)
   @IsOptional()
   @ApiProperty({
     description: 'Avatar path of user',

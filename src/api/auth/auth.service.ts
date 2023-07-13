@@ -82,17 +82,13 @@ export class AuthService {
     return `Authentication=; HttpOnly; Path=/; Max-Age=0`;
   }
 
-  async googleSignIn(user: CurrentUserType) {
-    console.log(user);
-  }
-
   async googleValidateUser(
     email: string,
     fullName: string,
     avatar: string,
   ): Promise<CurrentUserType> {
     const userByEmail = await this.usersService.findOneByEmailWithDeleted(email);
-    if (userByEmail.deletedAt) {
+    if (userByEmail?.deletedAt) {
       throw new BadRequestException(authError.alreadyDeletedUser);
     }
     if (!userByEmail) {

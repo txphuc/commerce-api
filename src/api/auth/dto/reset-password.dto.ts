@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { SignInDto } from './sign-in.dto';
-import { IsString } from '@nestjs/class-validator';
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsString } from '@nestjs/class-validator';
 
 export class ResetPasswordDto extends SignInDto {
   @IsString()
