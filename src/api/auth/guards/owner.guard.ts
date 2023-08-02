@@ -28,7 +28,7 @@ export class OwnerGuard implements CanActivate {
       const isOwner = user.userId.toString() === resourceId;
       if (!isOwner) {
         throw new ForbiddenException(
-          createErrorType(User.name, 'role', commonError.forbiddenResource),
+          createErrorType(User.name, 'role', commonError.forbiddenResource, user.role),
         );
       }
     }

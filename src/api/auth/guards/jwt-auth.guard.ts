@@ -29,7 +29,12 @@ export default class JwtAuthGuard extends AuthGuard('jwt') {
       const request = context.switchToHttp().getRequest() as RequestWithUser;
       const token = request?.cookies?.Authentication;
       if (token) {
-        const payload = this.jwtService.verify(token);
+        let payload: any;
+        try {
+          payload = this.jwtService.verify(token);
+        } catch (err) {
+          return true;
+        }
         try {
           const user = await this.usersService.findOneById(payload.userId);
 

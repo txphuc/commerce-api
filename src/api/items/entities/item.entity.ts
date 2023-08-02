@@ -1,7 +1,8 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Base } from '../../../common/entities/base.entity';
 import { Common } from '../../../common/constants/common.constant';
 import { Product } from '../../../api/products/entities/product.entity';
+import { OrderItem } from '../../../api/orders/entities/order-item.entity';
 
 @Entity({ name: 'items' })
 export class Item extends Base {
@@ -36,9 +37,16 @@ export class Item extends Base {
   specification?: object;
 
   @ManyToOne(() => Product, (product) => product.items, {
+    cascade: true,
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'product_id', foreignKeyConstraintName: 'items_product_id_fkey' })
   product: Product;
+
+  @OneToMany(() => OrderItem, (orderItem) => orderItem.item, {
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+  })
+  orderItems: OrderItem[];
 }

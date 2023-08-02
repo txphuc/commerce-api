@@ -46,7 +46,9 @@ export class AuthService {
   async validateUser(email: string, password: string): Promise<CurrentUserType> {
     const user = await this.usersService.findOneByEmail(email);
     if (!user) {
-      throw new NotFoundException(createErrorType(User.name, 'email', commonError.isNotFound));
+      throw new NotFoundException(
+        createErrorType(User.name, 'email', commonError.isNotFound, email),
+      );
     }
     if (!user.isActivated) {
       throw new BadRequestException(authError.unConfirmedEmail);

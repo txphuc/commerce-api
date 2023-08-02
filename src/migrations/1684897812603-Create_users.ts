@@ -17,7 +17,7 @@ export class CreateUsers1684897812603 implements MigrationInterface {
         "gender" "public"."users_gender_enum",
         "birthday" TIMESTAMP WITH TIME ZONE,
         "phone" character varying(16),
-        "address" character varying,
+        "address" character varying(256),
         "role" "public"."users_role_enum" NOT NULL DEFAULT 'User',
         "avatar" character varying,
         "is_activated" boolean NOT NULL DEFAULT false,

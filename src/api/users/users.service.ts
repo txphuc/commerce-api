@@ -7,7 +7,7 @@ import { authError } from 'src/common/errors/constants/auth.constant';
 import { commonError } from 'src/common/errors/constants/common.constant';
 import { CreateGoogleUserDto } from './dto/create-google-user.dto';
 import { UsersRepository } from './users.repository';
-import { PageDto } from 'src/common/dto/pagination/page.tdo';
+import { PageDto } from 'src/common/dto/pagination/page.dto';
 import { PageOptionsDto } from 'src/common/dto/pagination/page-options.dto';
 import { v4 as uuid } from 'uuid';
 import { EmailsService } from '../emails/emails.service';
@@ -74,10 +74,10 @@ export class UsersService {
   ): Promise<User> {
     const user = await this.findOneById(id);
     if (!user) {
-      throw new BadRequestException(createErrorType(User.name, 'id', commonError.isNotFound));
+      throw new BadRequestException(createErrorType(User.name, 'id', commonError.isNotFound, id));
     }
     Object.assign(user, updateUserDto);
-    user.setUpdatedUser(currentUser.userId);
+    user.setUpdatedUser(currentUser?.userId);
     return await this.usersRepository.save(user);
   }
 
@@ -88,13 +88,15 @@ export class UsersService {
   ) {
     const user = await this.findOneById(id);
     if (!user) {
-      throw new BadRequestException(createErrorType(User.name, 'id', commonError.isNotFound));
+      throw new BadRequestException(createErrorType(User.name, 'id', commonError.isNotFound, id));
     }
     if (updateUserRoleDto.role === user.role) {
-      throw new BadRequestException(createErrorType(User.name, 'role', commonError.nothingChange));
+      throw new BadRequestException(
+        createErrorType(User.name, 'role', commonError.nothingChange, updateUserRoleDto.role),
+      );
     }
     user.role = updateUserRoleDto.role;
-    user.setUpdatedUser(currentUser.userId);
+    user.setUpdatedUser(currentUser?.userId);
     await this.usersRepository.save(user);
   }
 
@@ -112,7 +114,9 @@ export class UsersService {
   async confirmEmail(email: string, activationKey: string) {
     const user = await this.findOneByEmail(email);
     if (!user) {
-      throw new BadRequestException(createErrorType(User.name, 'email', commonError.isNotFound));
+      throw new BadRequestException(
+        createErrorType(User.name, 'email', commonError.isNotFound, email),
+      );
     }
     if (user.isActivated) {
       throw new BadRequestException(authError.alreadyConfirmedEmail);
@@ -133,7 +137,9 @@ export class UsersService {
   async resendConfirmEmail(email: string): Promise<void> {
     const user = await this.findOneByEmail(email);
     if (!user) {
-      throw new BadRequestException(createErrorType(User.name, 'email', commonError.isNotFound));
+      throw new BadRequestException(
+        createErrorType(User.name, 'email', commonError.isNotFound, email),
+      );
     }
     if (user.isActivated) {
       throw new BadRequestException(authError.alreadyConfirmedEmail);
@@ -146,7 +152,9 @@ export class UsersService {
     const { email, password, resetToken } = resetPasswordDto;
     const user = await this.findOneByEmail(email);
     if (!user) {
-      throw new BadRequestException(createErrorType(User.name, 'email', commonError.isNotFound));
+      throw new BadRequestException(
+        createErrorType(User.name, 'email', commonError.isNotFound, email),
+      );
     }
     if (isAfter(new Date(), user.resetTokenExp)) {
       throw new BadRequestException(authError.expiredResetToken);
@@ -164,7 +172,9 @@ export class UsersService {
   async requestResetPassword(email: string) {
     const user = await this.findOneByEmail(email);
     if (!user) {
-      throw new BadRequestException(createErrorType(User.name, 'email', commonError.isNotFound));
+      throw new BadRequestException(
+        createErrorType(User.name, 'email', commonError.isNotFound, email),
+      );
     }
     user.resetToken = crypto.randomBytes(3).toString('hex');
     const now = new Date();
@@ -182,7 +192,9 @@ export class UsersService {
   async changePassword(email: string, oldPassword: string, newPassword: string) {
     const user = await this.findOneByEmail(email);
     if (!user) {
-      throw new BadRequestException(createErrorType(User.name, 'email', commonError.isNotFound));
+      throw new BadRequestException(
+        createErrorType(User.name, 'email', commonError.isNotFound, email),
+      );
     }
     if (user.password && (!oldPassword || !(await compare(oldPassword, user.password)))) {
       throw new BadRequestException(authError.wrongOldPassword);
@@ -199,10 +211,10 @@ export class UsersService {
   async softDelete(id: number, currentUser: CurrentUserType) {
     const user = await this.usersRepository.findOneBy({ id: id });
     if (!user) {
-      throw new BadRequestException(createErrorType(User.name, 'id', commonError.isNotFound));
+      throw new BadRequestException(createErrorType(User.name, 'id', commonError.isNotFound, id));
     }
     user.deletedAt = new Date();
-    user.setUpdatedUser(currentUser.userId);
+    user.setUpdatedUser(currentUser?.userId);
     await this.usersRepository.save(user);
   }
 
@@ -212,13 +224,15 @@ export class UsersService {
       withDeleted: true,
     });
     if (!user) {
-      throw new BadRequestException(createErrorType(User.name, 'id', commonError.isNotFound));
+      throw new BadRequestException(createErrorType(User.name, 'id', commonError.isNotFound, id));
     }
     if (user.deletedAt === null) {
-      throw new BadRequestException(createErrorType(User.name, 'id', commonError.notDeletedYet));
+      throw new BadRequestException(
+        createErrorType(User.name, 'id', commonError.notDeletedYet, id),
+      );
     }
     user.deletedAt = null;
-    user.setCreatedUser(currentUser.userId);
+    user.setUpdatedUser(currentUser?.userId);
     await this.usersRepository.save(user);
   }
 

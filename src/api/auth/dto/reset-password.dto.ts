@@ -3,8 +3,8 @@ import { SignInDto } from './sign-in.dto';
 import { IsNotEmpty, IsString } from '@nestjs/class-validator';
 
 export class ResetPasswordDto extends SignInDto {
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   @ApiProperty({
     description: 'Reset Password Token',
     type: String,

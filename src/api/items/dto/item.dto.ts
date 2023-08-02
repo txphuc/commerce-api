@@ -1,9 +1,6 @@
-import { Expose } from 'class-transformer';
-import { Item } from '../entities/item.entity';
+import { Expose, Transform } from 'class-transformer';
 
 export class ItemDto {
-  static resource = Item.name;
-
   @Expose()
   id: number;
 
@@ -17,6 +14,7 @@ export class ItemDto {
   description?: string;
 
   @Expose()
+  @Transform(({ value }) => Number(value))
   price: number;
 
   @Expose()

@@ -9,7 +9,7 @@ import { Product } from './entities/product.entity';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { CategoriesService } from '../categories/categories.service';
 import { ProductPageOptionsDto } from 'src/common/dto/pagination/product-page-options.dto';
-import { PageDto } from 'src/common/dto/pagination/page.tdo';
+import { PageDto } from 'src/common/dto/pagination/page.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Item } from '../items/entities/item.entity';
 import { Repository } from 'typeorm';
@@ -40,15 +40,19 @@ export class ProductsService {
   async create(createProductDto: CreateProductDto, currentUser: CurrentUserType): Promise<Product> {
     await this.categoriesService.findOneById(createProductDto.categoryId);
     const product = this.productsRepository.create(createProductDto);
-    product.setCreatedUser(currentUser.userId);
+    product.setCreatedUser(currentUser?.userId);
     return await this.productsRepository.save(product);
   }
 
   async findOneById(id: number, currentUser?: CurrentUserType): Promise<Product> {
     const product = await this.productsRepository.findOne({ where: { id: id } });
     if (!product) {
-      throw new BadRequestException(createErrorType(Product.name, 'id', commonError.isNotFound));
+      throw new BadRequestException(
+        createErrorType(Product.name, 'id', commonError.isNotFound, id),
+      );
     }
+    const info = await this.productViewRepository.findOne({ where: { productId: id } });
+    product.info = info;
     const items = await this.itemsRepository.find({
       where: { productId: id },
       withDeleted: currentUser?.role === Role.Admin,
@@ -60,11 +64,13 @@ export class ProductsService {
   async update(id: number, currentUser: CurrentUserType, updateProductDto: UpdateProductDto) {
     const product = await this.productsRepository.findOneBy({ id: id });
     if (!product) {
-      throw new BadRequestException(createErrorType(Product.name, 'id', commonError.isNotFound));
+      throw new BadRequestException(
+        createErrorType(Product.name, 'id', commonError.isNotFound, id),
+      );
     }
     await this.categoriesService.findOneById(updateProductDto.categoryId);
     Object.assign(product, updateProductDto);
-    product.setUpdatedUser(currentUser.userId);
+    product.setUpdatedUser(currentUser?.userId);
 
     return await this.productsRepository.save(product);
   }
@@ -72,9 +78,11 @@ export class ProductsService {
   async softDelete(id: number, currentUser: CurrentUserType) {
     const product = await this.productsRepository.findOne({ where: { id: id } });
     if (!product) {
-      throw new BadRequestException(createErrorType(Product.name, 'id', commonError.isNotFound));
+      throw new BadRequestException(
+        createErrorType(Product.name, 'id', commonError.isNotFound, id),
+      );
     }
-    product.setUpdatedUser(currentUser.userId);
+    product.setUpdatedUser(currentUser?.userId);
     product.deletedAt = new Date();
     await this.productsRepository.save(product);
   }
@@ -85,13 +93,17 @@ export class ProductsService {
       withDeleted: true,
     });
     if (!product) {
-      throw new BadRequestException(createErrorType(Product.name, 'id', commonError.isNotFound));
+      throw new BadRequestException(
+        createErrorType(Product.name, 'id', commonError.isNotFound, id),
+      );
     }
     if (product.deletedAt === null) {
-      throw new BadRequestException(createErrorType(Product.name, 'id', commonError.notDeletedYet));
+      throw new BadRequestException(
+        createErrorType(Product.name, 'id', commonError.notDeletedYet, id),
+      );
     }
     product.deletedAt = null;
-    product.setCreatedUser(currentUser.userId);
+    product.setUpdatedUser(currentUser?.userId);
     await this.productsRepository.save(product);
   }
 }

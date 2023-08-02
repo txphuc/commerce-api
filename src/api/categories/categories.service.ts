@@ -23,7 +23,9 @@ export class CategoriesService {
 
     let category = await this.categoriesRepository.findOneBy({ name: createCategoryDto.name });
     if (category) {
-      errors.push(createErrorType(Category.name, 'name', commonError.alreadyExists));
+      errors.push(
+        createErrorType(Category.name, 'name', commonError.alreadyExists, createCategoryDto.name),
+      );
     }
 
     if (createCategoryDto.parentId !== null && createCategoryDto.parentId !== undefined) {
@@ -31,7 +33,14 @@ export class CategoriesService {
         id: createCategoryDto.parentId,
       });
       if (!parentCategory) {
-        errors.push(createErrorType(Category.name, 'parentId', commonError.isNotFound));
+        errors.push(
+          createErrorType(
+            Category.name,
+            'parentId',
+            commonError.isNotFound,
+            createCategoryDto.parentId,
+          ),
+        );
       }
     }
     if (errors.length > 0) {
@@ -39,7 +48,7 @@ export class CategoriesService {
     }
 
     category = this.categoriesRepository.create(createCategoryDto);
-    category.setUpdatedUser(currentUser.userId);
+    category.setUpdatedUser(currentUser?.userId);
 
     return await this.categoriesRepository.save(category);
   }
@@ -47,7 +56,9 @@ export class CategoriesService {
   async findOneById(id: number): Promise<Category> {
     const category = await this.categoriesRepository.findOneBy({ id: id });
     if (!category) {
-      throw new BadRequestException(createErrorType(Category.name, 'id', commonError.isNotFound));
+      throw new BadRequestException(
+        createErrorType(Category.name, 'id', commonError.isNotFound, id),
+      );
     }
     return category;
   }
@@ -59,7 +70,9 @@ export class CategoriesService {
     const errors = [];
     const category = await this.categoriesRepository.findOneBy({ id: id });
     if (!category) {
-      throw new BadRequestException(createErrorType(Category.name, 'id', commonError.isNotFound));
+      throw new BadRequestException(
+        createErrorType(Category.name, 'id', commonError.isNotFound, id),
+      );
     } else {
       const otherCategoryByName = await this.categoriesRepository.findOne({
         where: {
@@ -68,7 +81,9 @@ export class CategoriesService {
         },
       });
       if (otherCategoryByName) {
-        errors.push(createErrorType(Category.name, 'name', commonError.alreadyExists));
+        errors.push(
+          createErrorType(Category.name, 'name', commonError.alreadyExists, updateCategoryDto.name),
+        );
       }
     }
     if (updateCategoryDto.parentId !== null && updateCategoryDto.parentId !== undefined) {
@@ -76,14 +91,21 @@ export class CategoriesService {
         id: updateCategoryDto.parentId,
       });
       if (!parentCategory) {
-        errors.push(createErrorType(Category.name, 'parentId', commonError.isNotFound));
+        errors.push(
+          createErrorType(
+            Category.name,
+            'parentId',
+            commonError.isNotFound,
+            updateCategoryDto.parentId,
+          ),
+        );
       }
     }
     if (errors.length > 0) {
       throw new BadRequestException(errors);
     }
     Object.assign(category, updateCategoryDto);
-    category.setUpdatedUser(currentUser.userId);
+    category.setUpdatedUser(currentUser?.userId);
 
     return await this.categoriesRepository.save(category);
   }
@@ -91,9 +113,11 @@ export class CategoriesService {
   async softDelete(id: number, currentUser: CurrentUserType) {
     const category = await this.categoriesRepository.findOne({ where: { id: id } });
     if (!category) {
-      throw new BadRequestException(createErrorType(Category.name, 'id', commonError.isNotFound));
+      throw new BadRequestException(
+        createErrorType(Category.name, 'id', commonError.isNotFound, id),
+      );
     }
-    category.setUpdatedUser(currentUser.userId);
+    category.setUpdatedUser(currentUser?.userId);
     category.deletedAt = new Date();
     await this.categoriesRepository.save(category);
   }
@@ -104,15 +128,17 @@ export class CategoriesService {
       withDeleted: true,
     });
     if (!category) {
-      throw new BadRequestException(createErrorType(Category.name, 'id', commonError.isNotFound));
+      throw new BadRequestException(
+        createErrorType(Category.name, 'id', commonError.isNotFound, id),
+      );
     }
     if (category.deletedAt === null) {
       throw new BadRequestException(
-        createErrorType(Category.name, 'id', commonError.notDeletedYet),
+        createErrorType(Category.name, 'id', commonError.notDeletedYet, id),
       );
     }
     category.deletedAt = null;
-    category.setCreatedUser(currentUser.userId);
+    category.setUpdatedUser(currentUser?.userId);
     await this.categoriesRepository.save(category);
   }
 

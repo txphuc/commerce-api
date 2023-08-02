@@ -31,6 +31,7 @@ export class Product extends Base {
   images: string[];
 
   @ManyToOne(() => Category, (category) => category.products, {
+    cascade: true,
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
   })

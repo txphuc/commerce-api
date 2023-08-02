@@ -4,6 +4,8 @@ import { IsEnum, IsInt, IsOptional, IsString, Min } from '@nestjs/class-validato
 import { Order } from 'src/common/enums/order.enum';
 
 export class PageOptionsDto {
+  static resource = PageOptionsDto.name;
+
   @ApiPropertyOptional({
     default: '',
   })
@@ -16,8 +18,8 @@ export class PageOptionsDto {
     default: 0,
   })
   @Type(() => Number)
-  @IsInt()
   @Min(0)
+  @IsInt()
   @IsOptional()
   page?: number = 0;
 
@@ -26,8 +28,8 @@ export class PageOptionsDto {
     default: 10,
   })
   @Type(() => Number)
-  @IsInt()
   @Min(1)
+  @IsInt()
   @IsOptional()
   take?: number = 10;
 

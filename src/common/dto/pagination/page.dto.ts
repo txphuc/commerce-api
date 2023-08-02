@@ -5,6 +5,8 @@ import { IsArray } from '@nestjs/class-validator';
 
 @Expose()
 export class PageDto<T> {
+  static resource = PageDto.name;
+
   @IsArray()
   @ApiProperty({ isArray: true })
   readonly data: T[];

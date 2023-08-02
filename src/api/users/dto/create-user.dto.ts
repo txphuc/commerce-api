@@ -1,6 +1,7 @@
 import {
   IsEmail,
   IsEnum,
+  IsNotEmpty,
   IsNumberString,
   IsOptional,
   IsString,
@@ -38,6 +39,7 @@ export class CreateUserDto {
   password: string;
 
   @MaxLength(Common.FullName.MAX_LENGTH)
+  @IsNotEmpty()
   @IsString()
   @ApiProperty({
     description: 'Full name of user',
@@ -79,6 +81,8 @@ export class CreateUserDto {
   })
   phone: string;
 
+  @MaxLength(Common.Address.MAX_LENGTH)
+  @IsNotEmpty()
   @IsString()
   @ApiProperty({
     description: 'Address of user',

@@ -27,7 +27,7 @@ export function IsValidImageList(options?: ValidationOptions) {
             if (typeof item !== 'string') {
               return false;
             }
-            if (!item.match(Regex.IMAGE)) {
+            if (!item.match(Regex.URL)) {
               return false;
             }
           }

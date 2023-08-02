@@ -22,14 +22,14 @@ export class ItemsService {
   async create(createItemDto: CreateItemDto, currentUser: CurrentUserType): Promise<Item> {
     await this.productsService.findOneById(createItemDto.productId);
     const item = this.itemsRepository.create(createItemDto);
-    item.setCreatedUser(currentUser.userId);
+    item.setCreatedUser(currentUser?.userId);
     return await this.itemsRepository.save(item);
   }
 
   async findOneById(id: number): Promise<Item> {
     const item = await this.itemsRepository.findOneBy({ id: id });
     if (!item) {
-      throw new BadRequestException(createErrorType(Item.name, 'id', commonError.isNotFound));
+      throw new BadRequestException(createErrorType(Item.name, 'id', commonError.isNotFound, id));
     }
     return item;
   }
@@ -37,11 +37,11 @@ export class ItemsService {
   async update(id: number, currentUser: CurrentUserType, updateItemDto: UpdateItemDto) {
     const item = await this.itemsRepository.findOneBy({ id: id });
     if (!item) {
-      throw new BadRequestException(createErrorType(Item.name, 'id', commonError.isNotFound));
+      throw new BadRequestException(createErrorType(Item.name, 'id', commonError.isNotFound, id));
     }
     await this.productsService.findOneById(updateItemDto.productId);
     Object.assign(item, updateItemDto);
-    item.setUpdatedUser(currentUser.userId);
+    item.setUpdatedUser(currentUser?.userId);
 
     return await this.itemsRepository.save(item);
   }
@@ -49,9 +49,9 @@ export class ItemsService {
   async softDelete(id: number, currentUser: CurrentUserType) {
     const item = await this.itemsRepository.findOne({ where: { id: id } });
     if (!item) {
-      throw new BadRequestException(createErrorType(Item.name, 'id', commonError.isNotFound));
+      throw new BadRequestException(createErrorType(Item.name, 'id', commonError.isNotFound, id));
     }
-    item.setUpdatedUser(currentUser.userId);
+    item.setUpdatedUser(currentUser?.userId);
     item.deletedAt = new Date();
     await this.itemsRepository.save(item);
   }
@@ -62,13 +62,15 @@ export class ItemsService {
       withDeleted: true,
     });
     if (!item) {
-      throw new BadRequestException(createErrorType(Item.name, 'id', commonError.isNotFound));
+      throw new BadRequestException(createErrorType(Item.name, 'id', commonError.isNotFound, id));
     }
     if (item.deletedAt === null) {
-      throw new BadRequestException(createErrorType(Item.name, 'id', commonError.notDeletedYet));
+      throw new BadRequestException(
+        createErrorType(Item.name, 'id', commonError.notDeletedYet, id),
+      );
     }
     item.deletedAt = null;
-    item.setCreatedUser(currentUser.userId);
+    item.setUpdatedUser(currentUser?.userId);
     await this.itemsRepository.save(item);
   }
 

@@ -21,7 +21,7 @@ const RoleGuard = (role: Role): Type<CanActivate> => {
 
       if (user?.role !== role) {
         throw new ForbiddenException(
-          createErrorType(User.name, 'role', commonError.forbiddenResource),
+          createErrorType(User.name, 'role', commonError.forbiddenResource, user?.role),
         );
       }
 

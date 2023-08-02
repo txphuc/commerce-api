@@ -1,6 +1,7 @@
 import { Item } from '../entities/item.entity';
 import {
   IsInt,
+  IsNotEmpty,
   IsNumber,
   IsObject,
   IsOptional,
@@ -34,6 +35,7 @@ export class CreateItemDto {
     example: 'example',
   })
   @MaxLength(Common.Name.MAX_LENGTH)
+  @IsNotEmpty()
   @IsString()
   name: string;
 
