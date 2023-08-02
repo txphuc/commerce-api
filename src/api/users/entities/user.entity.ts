@@ -1,8 +1,9 @@
+import { Order } from '../../../api/orders/entities/order.entity';
 import { Common } from '../../../common/constants/common.constant';
 import { Base } from '../../../common/entities/base.entity';
 import { Gender } from '../../../common/enums/gender.enum';
 import { Role } from '../../../common/enums/role.enum';
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'users' })
 @Index('users_email_index', ['email'], { unique: true })
@@ -32,7 +33,7 @@ export class User extends Base {
   @Column({ nullable: true, length: Common.Phone.MAX_LENGTH })
   phone?: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, length: Common.Address.MAX_LENGTH })
   address?: string;
 
   @Column({ type: 'enum', enum: Role, default: Role.User })
@@ -55,4 +56,10 @@ export class User extends Base {
 
   @Column({ name: 'reset_token_exp', nullable: true, type: 'timestamptz' })
   resetTokenExp: Date;
+
+  @OneToMany(() => Order, (order) => order.user, {
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+  })
+  orders: Order[];
 }

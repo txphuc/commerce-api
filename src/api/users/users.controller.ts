@@ -7,6 +7,7 @@ import {
   Param,
   ParseIntPipe,
   Patch,
+  Post,
   Put,
   Query,
   Res,
@@ -24,33 +25,42 @@ import RoleGuard from '../auth/guards/role.guard';
 import { Role } from 'src/common/enums/role.enum';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 import { Response } from 'express';
+import { CreateUserOrderDto } from '../orders/dto/create-user-order.dto';
+import { OrdersService } from '../orders/orders.service';
+import { OrderDto } from '../orders/dto/order.dto';
 
 @ApiTags('Users')
-@Serialize(UserDto)
 @Controller('api/v1/users')
 export class UsersController {
   private readonly logger = new Logger(UsersController.name);
 
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly ordersService: OrdersService,
+  ) {}
 
   @Get('profile')
+  @Serialize(UserDto)
   @SkipSerialize()
   async getProfile(@CurrentUser() user: CurrentUserType) {
     return user;
   }
 
   @Get()
+  @Serialize(UserDto)
   @UseGuards(RoleGuard(Role.Admin))
   async getAllUsers(@Query() pageOptionsDto: PageOptionsDto) {
     return this.usersService.getAllUsers(pageOptionsDto);
   }
 
   @Get(':id')
+  @Serialize(UserDto)
   async findOneById(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.findOneById(id);
   }
 
   @Put(':id')
+  @Serialize(UserDto)
   async update(
     @Param('id', ParseIntPipe) id: number,
     @CurrentUser() currentUser: CurrentUserType,
@@ -90,6 +100,38 @@ export class UsersController {
     @Res() response: Response,
   ) {
     await this.usersService.unDelete(id, currentUser);
+    return response.sendStatus(204);
+  }
+
+  @Post(':id/order')
+  @Serialize(OrderDto)
+  async createOrder(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() createUserOrderDto: CreateUserOrderDto,
+    @CurrentUser() currentUser: CurrentUserType,
+  ) {
+    return await this.ordersService.create(createUserOrderDto, currentUser);
+  }
+
+  @Put(':id/order/:orderId')
+  @Serialize(OrderDto)
+  async updateOrder(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('orderId', ParseIntPipe) orderId: number,
+    @Body() createUserOrderDto: CreateUserOrderDto,
+    @CurrentUser() currentUser: CurrentUserType,
+  ) {
+    return await this.ordersService.update(orderId, createUserOrderDto, currentUser);
+  }
+
+  @Delete(':id/order/:orderId')
+  async softDeleteOrder(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('orderId', ParseIntPipe) orderId: number,
+    @CurrentUser() currentUser: CurrentUserType,
+    @Res() response: Response,
+  ) {
+    await this.ordersService.softDelete(orderId, currentUser);
     return response.sendStatus(204);
   }
 }

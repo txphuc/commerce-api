@@ -9,8 +9,8 @@ export class UpdateUserDto extends PartialType(
 ) {
   static resource = User.name;
 
+  @Matches(Regex.URL)
   @IsOptional()
-  @Matches(Regex.IMAGE)
   @ApiProperty({
     description: 'Avatar path of user',
     nullable: true,

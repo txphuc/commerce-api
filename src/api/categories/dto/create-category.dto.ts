@@ -1,7 +1,8 @@
-import { IsInt, IsOptional, IsString, MaxLength } from '@nestjs/class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsString, MaxLength } from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Category } from '../entities/category.entity';
 import { IsValidSpecificationList } from 'src/common/validators/is-valid-specification-list.validator';
+import { Common } from 'src/common/constants/common.constant';
 
 export class CreateCategoryDto {
   static resource = Category.name;
@@ -13,7 +14,8 @@ export class CreateCategoryDto {
     required: true,
     example: 'example',
   })
-  @MaxLength(64)
+  @MaxLength(Common.Name.MAX_LENGTH)
+  @IsNotEmpty()
   @IsString()
   name: string;
 
@@ -24,7 +26,7 @@ export class CreateCategoryDto {
     required: false,
     example: 'example',
   })
-  @MaxLength(1024)
+  @MaxLength(Common.Description.MAX_LENGTH)
   @IsString()
   @IsOptional()
   description?: string;
@@ -36,8 +38,8 @@ export class CreateCategoryDto {
     required: false,
     example: ['size', 'color', 'material'],
   })
-  @IsOptional()
   @IsValidSpecificationList()
+  @IsOptional()
   specificationList?: string[];
 
   @ApiProperty({

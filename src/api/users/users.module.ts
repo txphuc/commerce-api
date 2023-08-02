@@ -6,9 +6,10 @@ import { User } from './entities/user.entity';
 import { UsersRepository } from './users.repository';
 import { EmailsModule } from '../emails/emails.module';
 import { ConfigModule } from '@nestjs/config';
+import { OrdersModule } from '../orders/orders.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), EmailsModule, ConfigModule],
+  imports: [TypeOrmModule.forFeature([User]), EmailsModule, ConfigModule, OrdersModule],
   controllers: [UsersController],
   providers: [UsersService, UsersRepository],
   exports: [UsersService],

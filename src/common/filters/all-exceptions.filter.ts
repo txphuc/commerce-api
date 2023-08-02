@@ -31,12 +31,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const status = exception.getStatus();
     const exceptionRes = exception.getResponse() as ExceptionRes | ErrorType;
-    const { resource, field, code, message } = exceptionRes as ErrorType;
+    const { resource, field, code, message, value } = exceptionRes as ErrorType;
     this.logger.log(JSON.stringify(exceptionRes));
     const error = {
       resource,
       field,
       code,
+      value: value === undefined ? null : value,
       message: data[code] ?? message,
     };
 

@@ -14,6 +14,10 @@ export const commonError = {
   isEnum: '1012',
   minLength: '1013',
   maxLength: '1014',
+  isNotEmptyObject: '1015',
+  isArray: '1016',
+  arrayNotEmpty: '1017',
+  isDistinctListOfObject: '1018',
 
   isNotFound: '1100',
   nothingChange: '1101',

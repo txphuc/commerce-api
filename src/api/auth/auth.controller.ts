@@ -105,7 +105,7 @@ export class AuthController {
     @Res() response: Response,
   ) {
     const { oldPassword, newPassword } = changePasswordDto;
-    await this.authService.changePassword(currentUser.email, oldPassword, newPassword);
+    await this.authService.changePassword(currentUser?.email, oldPassword, newPassword);
     return response.sendStatus(200);
   }
 }

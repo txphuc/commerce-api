@@ -38,14 +38,14 @@ export class ItemsController {
 
   @Get(':id')
   @Public()
-  async findOne(@Param('id') id: number) {
+  async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.itemsService.findOneById(id);
   }
 
   @Put(':id')
   @UseGuards(RoleGuard(Role.Admin))
   update(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @CurrentUser() currentUser: CurrentUserType,
     @Body() updateItemDto: UpdateItemDto,
   ) {

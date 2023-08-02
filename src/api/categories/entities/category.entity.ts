@@ -30,6 +30,7 @@ export class Category extends Base {
   specificationList: string[];
 
   @ManyToOne(() => Category, (category) => category.children, {
+    cascade: true,
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
   })

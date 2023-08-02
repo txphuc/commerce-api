@@ -1,7 +1,8 @@
-import { IsInt, IsOptional, IsString, MaxLength } from '@nestjs/class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsString, MaxLength } from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Product } from '../entities/product.entity';
 import { IsValidImageList } from 'src/common/validators/is-valid-image-list.validator';
+import { Common } from 'src/common/constants/common.constant';
 
 export class CreateProductDto {
   static resource = Product.name;
@@ -23,7 +24,8 @@ export class CreateProductDto {
     required: true,
     example: 'example',
   })
-  @MaxLength(64)
+  @MaxLength(Common.Name.MAX_LENGTH)
+  @IsNotEmpty()
   @IsString()
   name: string;
 
@@ -34,7 +36,7 @@ export class CreateProductDto {
     required: false,
     example: 'example',
   })
-  @MaxLength(1024)
+  @MaxLength(Common.Description.MAX_LENGTH)
   @IsString()
   @IsOptional()
   description?: string;

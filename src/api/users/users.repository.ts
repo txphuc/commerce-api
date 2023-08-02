@@ -2,7 +2,7 @@ import { DataSource, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { Injectable } from '@nestjs/common';
 import { PageOptionsDto } from 'src/common/dto/pagination/page-options.dto';
-import { PageDto } from 'src/common/dto/pagination/page.tdo';
+import { PageDto } from 'src/common/dto/pagination/page.dto';
 import { PageMetaDto } from 'src/common/dto/pagination/page-meta.dto';
 import { getSkip } from 'src/common/utils/pagination.util';
 

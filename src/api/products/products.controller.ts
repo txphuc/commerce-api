@@ -52,14 +52,17 @@ export class ProductsController {
 
   @Get(':id')
   @Public()
-  async findOne(@Param('id') id: number, @CurrentUser() currentUser: CurrentUserType) {
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() currentUser: CurrentUserType,
+  ) {
     return this.productsService.findOneById(id, currentUser);
   }
 
   @Put(':id')
   @UseGuards(RoleGuard(Role.Admin))
   update(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @CurrentUser() currentUser: CurrentUserType,
     @Body() updateProductDto: UpdateProductDto,
   ) {

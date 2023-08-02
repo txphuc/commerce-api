@@ -8,6 +8,8 @@ import { BadRequestExceptionsFilter } from './common/filters/bad-request-excepti
 import * as cookieParser from 'cookie-parser';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { getLogLevels } from './common/utils/logger.util';
+import * as favicon from 'serve-favicon';
+import * as path from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -28,6 +30,9 @@ async function bootstrap() {
     }),
   );
   app.useGlobalFilters(new BadRequestExceptionsFilter(), new AllExceptionsFilter());
+
+  const faviconPath = path.join(__dirname, '..', 'src', 'favicon.ico');
+  app.use(favicon(faviconPath));
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
